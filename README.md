@@ -11,7 +11,7 @@ O foco inicial é garantir que **usuários possam se cadastrar, logar e acessar 
 
 ## Status atual
 
-Atualmente, o projeto está na **Semana 1**, com o backend funcional, incluindo:
+Atualmente, o projeto está na **Semana 3**, com o backend funcional, incluindo:
 
 - Banco PostgreSQL conectado e funcionando
 - Tabela `users` criada
@@ -24,7 +24,7 @@ Atualmente, o projeto está na **Semana 1**, com o backend funcional, incluindo:
 
 ## Plano de desenvolvimento — 8 semanas
 
-### Semana 1 (Atual)
+### Semana 1 
 - Setup do projeto Spring Boot
 - Configuração do banco PostgreSQL (`studyflow`)
 - Criação da entidade `User` e repositório `UserRepository`
@@ -36,13 +36,13 @@ Atualmente, o projeto está na **Semana 1**, com o backend funcional, incluindo:
   - `GET /users` → protegido via token
 - Testes completos via Postman/Swagger
 
-### Semana 2
+### Semana 2 
 - Criar endpoint CRUD de **Produtos / Biblioteca**
 - Implementar **DTOs e validações**
 - Configurar testes unitários para novos endpoints
 - Testar segurança com JWT nos novos endpoints
 
-### Semana 3
+### Semana 3 (Atual)
 - Implementar **filtros e paginação**
 - Adicionar busca por nome/email nos recursos
 - Melhorar tratamento de erros via `GlobalExceptionHandler`
