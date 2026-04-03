@@ -1,5 +1,14 @@
 # StudyFlow Backend
 
+## Repositórios do Projeto
+
+| Parte | Repositório |
+|-------|-------------|
+| **Backend** (Java Spring Boot) | [felipecorinthiano011/studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas) |
+| **Frontend** (Angular + Tailwind) | [felipecorinthiano011/studyflow-saas-frontend](https://github.com/felipecorinthiano011/studyflow-saas-frontend) |
+
+---
+
 ## Descrição do Projeto
 
 O **StudyFlow** é um SaaS de estudo e aprendizado que tem como objetivo centralizar usuários e conteúdo de estudo de forma simples e escalável.  
@@ -53,7 +62,7 @@ Atualmente, o projeto está na **Semana 4**, com o backend funcional, incluindo:
 - Adicionar busca por nome/email nos recursos
 - Melhorar tratamento de erros via `GlobalExceptionHandler`
 
-### Semana 4 (Atual)
+### Semana 4
 - Configurar **Docker** para backend e banco PostgreSQL
 - Preparar **application.properties** para ambientes dev e prod
 - Testar containers localmente
@@ -63,7 +72,7 @@ Atualmente, o projeto está na **Semana 4**, com o backend funcional, incluindo:
 - Criar exemplos de requests/responses
 - Garantir consistência e validação dos dados
 
-### Semana 6
+### Semana 6 (Atual)
 - Início da integração com **front-end Angular + Tailwind**
 - Testar chamadas de API com JWT do front-end
 - Criar componente simples de login e listagem de usuários
