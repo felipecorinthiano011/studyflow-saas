@@ -21,7 +21,6 @@ public class StudyItemService {
     private final UserRepository userRepository;
 
     public StudyItemResponseDTO create(StudyItemRequestDTO dto, Long userId) {
-
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -32,9 +31,32 @@ public class StudyItemService {
                 .user(user)
                 .build();
 
-        StudyItem saved = studyItemRepository.save(studyItem);
+        return mapToResponse(studyItemRepository.save(studyItem));
+    }
 
-        return mapToResponse(saved);
+    public StudyItemResponseDTO update(Long id, StudyItemRequestDTO dto, Long userId) {
+        StudyItem item = studyItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        if (!item.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        item.setTitle(dto.getTitle());
+        item.setDescription(dto.getDescription());
+
+        return mapToResponse(studyItemRepository.save(item));
+    }
+
+    public void delete(Long id, Long userId) {
+        StudyItem item = studyItemRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Item not found"));
+
+        if (!item.getUser().getId().equals(userId)) {
+            throw new RuntimeException("Access denied");
+        }
+
+        studyItemRepository.delete(item);
     }
 
     public List<StudyItemResponseDTO> findAllByUser(Long userId) {
