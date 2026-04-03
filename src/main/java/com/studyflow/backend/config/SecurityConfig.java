@@ -36,9 +36,10 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())  // ✅ moderno, sem erro de compilação
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/**").permitAll()                  // login sem token
-                        .requestMatchers(HttpMethod.POST, "/users").permitAll()  // criar usuário sem token
-                        .anyRequest().authenticated()                            // resto precisa de token
+                        .requestMatchers("/auth/**").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/users").permitAll()
+                        .requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(sess -> sess.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
