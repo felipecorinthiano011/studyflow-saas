@@ -11,14 +11,20 @@ O foco inicial é garantir que **usuários possam se cadastrar, logar e acessar 
 
 ## Status atual
 
-Atualmente, o projeto está na **Semana 3**, com o backend funcional, incluindo:
+Atualmente, o projeto está na **Semana 4**, com o backend funcional, incluindo:
 
 - Banco PostgreSQL conectado e funcionando
 - Tabela `users` criada
 - Endpoint `POST /users` para criar usuários
-- Endpoint `POST /auth/login` para gerar token JWT
+- Endpoint `POST /auth/login` para gerar token JWT (resposta padronizada em JSON)
 - Endpoint `GET /users` protegido via JWT
-- Testes concluídos via Postman/Swagger
+- Endpoint `POST /study-items` para criar itens de estudo
+- Endpoint `GET /study-items` para listar itens do usuário autenticado
+- Docker configurado para backend e PostgreSQL (`Dockerfile` + `docker-compose.yml`)
+- Profiles separados para dev e prod (`application-dev.properties`, `application-prod.properties`)
+- Testes de integração com H2 em memória (`@ActiveProfiles("test")`)
+
+> **A partir da Semana 4**, o desenvolvimento e acompanhamento do projeto passam a contar com o suporte do **Claude (Anthropic)** como agente de IA — auxiliando na resolução de problemas, revisão de código, diagnóstico de erros e orientação de boas práticas.
 
 ---
 
@@ -42,12 +48,12 @@ Atualmente, o projeto está na **Semana 3**, com o backend funcional, incluindo:
 - Configurar testes unitários para novos endpoints
 - Testar segurança com JWT nos novos endpoints
 
-### Semana 3 (Atual)
+### Semana 3
 - Implementar **filtros e paginação**
 - Adicionar busca por nome/email nos recursos
 - Melhorar tratamento de erros via `GlobalExceptionHandler`
 
-### Semana 4
+### Semana 4 (Atual)
 - Configurar **Docker** para backend e banco PostgreSQL
 - Preparar **application.properties** para ambientes dev e prod
 - Testar containers localmente
