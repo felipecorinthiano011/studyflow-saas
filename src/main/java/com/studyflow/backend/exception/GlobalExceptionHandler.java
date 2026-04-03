@@ -47,7 +47,6 @@ public class GlobalExceptionHandler {
     // 🔹 Erro genérico
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-
         Map<String, Object> response = new HashMap<>();
         response.put("timestamp", Instant.now());
         response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());

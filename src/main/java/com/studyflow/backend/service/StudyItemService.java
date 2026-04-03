@@ -21,8 +21,7 @@ public class StudyItemService {
     private final UserRepository userRepository;
 
     public StudyItemResponseDTO create(StudyItemRequestDTO dto, Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.getReferenceById(userId);
 
         StudyItem studyItem = StudyItem.builder()
                 .title(dto.getTitle())
