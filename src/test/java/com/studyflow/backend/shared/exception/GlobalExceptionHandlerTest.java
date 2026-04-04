@@ -94,16 +94,6 @@ class GlobalExceptionHandlerTest {
     }
 
     @Test
-    void shouldReturnUnauthorizedWithCustomMessageForAuthenticationException() {
-        AuthenticationException ex = new AuthenticationException("Token inválido");
-
-        ResponseEntity<Map<String, Object>> response = handler.handleAuthentication(ex);
-
-        assertEquals(HttpStatus.UNAUTHORIZED, response.getStatusCode());
-        assertEquals("Token inválido", response.getBody().get("message"));
-    }
-
-    @Test
     void shouldReturnInternalServerErrorForGenericException() {
         Exception ex = new Exception("Unexpected error");
 

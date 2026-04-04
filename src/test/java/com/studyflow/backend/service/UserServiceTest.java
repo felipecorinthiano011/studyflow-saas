@@ -118,9 +118,10 @@ class UserServiceTest {
     void shouldThrowWhenUserNotFoundByEmail() {
         when(userRepository.findByEmail("notfound@email.com")).thenReturn(Optional.empty());
 
-        assertThrows(RuntimeException.class,
+        RuntimeException ex = assertThrows(RuntimeException.class,
                 () -> userService.findByEmail("notfound@email.com"));
 
+        assertEquals("User not found", ex.getMessage());
         verify(userRepository).findByEmail("notfound@email.com");
     }
 }
