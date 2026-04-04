@@ -58,6 +58,10 @@ public class StudyItemService {
         studyItemRepository.delete(item);
     }
 
+    public void deleteAll(Long userId) {
+        studyItemRepository.deleteAllByUserId(userId);
+    }
+
     public List<StudyItemResponseDTO> findAllByUser(Long userId) {
         return studyItemRepository.findByUserId(userId)
                 .stream()

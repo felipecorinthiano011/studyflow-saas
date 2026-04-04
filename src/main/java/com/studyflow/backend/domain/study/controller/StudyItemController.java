@@ -87,6 +87,18 @@ public class StudyItemController {
         return ResponseEntity.noContent().build();
     }
 
+    @Operation(summary = "Excluir todos os itens do usuário",
+        responses = {
+            @ApiResponse(responseCode = "204", description = "Todos os itens excluídos"),
+            @ApiResponse(responseCode = "403", description = "Não autenticado")
+        })
+    @DeleteMapping
+    public ResponseEntity<Void> deleteAll(Authentication authentication) {
+        User user = getAuthenticatedUser(authentication);
+        studyItemService.deleteAll(user.getId());
+        return ResponseEntity.noContent().build();
+    }
+
     private User getAuthenticatedUser(Authentication authentication) {
         String email = ((UserDetails) authentication.getPrincipal()).getUsername();
         return userRepository.findByEmail(email)
