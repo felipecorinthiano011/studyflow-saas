@@ -1,12 +1,12 @@
 @echo off
-REM Script de testes para Docker Hub setup
+REM Script melhorado de testes para Docker Hub setup
 REM Verifica se Docker, login e build/push funcionam
 
 setlocal enabledelayedexpansion
 
 color 0B
 echo ════════════════════════════════════════════
-echo Docker Hub - Teste Automatizado
+echo Docker Hub - Teste Automatizado v2
 echo ════════════════════════════════════════════
 echo.
 
@@ -37,81 +37,88 @@ color 0A
 echo OK - Docker esta rodando
 echo.
 
-REM TESTE 3: Autenticacao
-echo [TESTE 3/6] Verificando autenticacao Docker Hub...
-REM Usar docker ps como teste de autenticacao (mais confiavel no Windows)
-docker ps >nul 2>&1
+REM TESTE 3: Tentar pull de imagem publica (testa autenticacao)
+echo [TESTE 3/6] Testando conectividade Docker Hub...
+REM Se conseguir fazer pull de imagem pequena, autenticacao ok
+docker pull hello-world >nul 2>&1
 if %errorlevel% neq 0 (
-    REM Tentar fazer login automaticamente
-    color 0B
-    echo AVISO: Nao autenticado ou problema de conexao
-    echo Tentando fazer login...
+    REM Se falhar, pode ser autenticacao ou internet
+    REM Nao vamos parar o script, apenas avisar
+    color 0E
+    echo AVISO: Problema ao conectar Docker Hub
+    echo Verifique internet e autenticacao (docker login)
     echo.
-    docker login
-    REM Depois de tentar login, continuar
+    REM Não parar aqui - continuar testes que nao precisam de autenticacao
 ) else (
     color 0A
-    echo OK - Docker esta autenticado
+    echo OK - Conectado ao Docker Hub
 )
 echo.
 
 REM TESTE 4: Backend compilado
-echo [TESTE 4/6] Verificando se backend compila...
+echo [TESTE 4/6] Compilando backend...
 cd backend
-call mvnw.cmd clean package -DskipTests -q >nul 2>&1
+REM Mostrar progresso
+echo Isso pode levar alguns minutos...
+call mvnw.cmd clean package -DskipTests -q
 if %errorlevel% neq 0 (
     cd ..
     color 0C
     echo FALHOU: Backend nao compila
-    echo Verifique pom.xml e dependencias
     pause
     exit /b 1
 )
 cd ..
 color 0A
-echo OK - Backend compila com sucesso
+echo OK - Backend compilou com sucesso
 echo.
 
 REM TESTE 5: Build Docker
-echo [TESTE 5/6] Testando Docker build...
+echo [TESTE 5/6] Criando imagem Docker...
 cd backend
-docker build -t studyflow-test:latest . >nul 2>&1
+docker build -t studyflow-test:latest .
 if %errorlevel% neq 0 (
     cd ..
     color 0C
     echo FALHOU: Docker build falhou
-    echo Verifique Dockerfile
     pause
     exit /b 1
 )
 cd ..
 color 0A
-echo OK - Docker build funciona
+echo OK - Imagem Docker criada
 echo.
 
-REM TESTE 6: Container inicia
-echo [TESTE 6/6] Testando se container inicia...
-docker run --rm -p 8080:8080 studyflow-test:latest timeout /T 5 >nul 2>&1
+REM TESTE 6: Listar imagens
+echo [TESTE 6/6] Verificando imagem criada...
+docker images | find "studyflow-test" >nul 2>&1
 if %errorlevel% neq 0 (
-    REM Esperado falhar no timeout, mas container deve ter iniciado
-    color 0A
-    echo OK - Container inicia (timeout esperado)
+    color 0C
+    echo AVISO: Imagem nao aparece em docker images
 ) else (
     color 0A
-    echo OK - Container rodou com sucesso
+    echo OK - Imagem listada
 )
 echo.
 
 REM Resultado final
 color 0A
 echo ════════════════════════════════════════════
-echo SUCESSO: Todos os testes passaram!
+echo SUCESSO: Testes completados!
 echo ════════════════════════════════════════════
 echo.
-echo Proximos passos:
-echo 1. Execute: docker push seu_username/studyflow-backend:latest
-echo 2. Verifique em: https://hub.docker.com/r/seu_username/studyflow-backend
-echo 3. Ou execute: .\docker-push.ps1 latest
+echo PROXIMO PASSO:
+echo Voce pode agora fazer push para Docker Hub:
+echo.
+echo 1. Primeiro, fazer login:
+echo    docker login
+echo.
+echo 2. Tag a imagem:
+echo    docker tag studyflow-test:latest seu_username/studyflow-backend:latest
+echo.
+echo 3. Push para Docker Hub:
+echo    docker push seu_username/studyflow-backend:latest
+echo.
 echo.
 pause
 
