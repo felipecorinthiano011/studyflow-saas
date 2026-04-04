@@ -1,176 +1,168 @@
-# StudyFlow Backend
-
-> SaaS platform for study management — Java Spring Boot REST API with JWT authentication.
-
+# StudyFlow SaaS
+> Full-stack SaaS platform for study management — Java Spring Boot REST API + Angular 21 frontend with JWT authentication.
 [![CI/CD](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/ci-cd.yml)
-
-| Repo | Description |
-|------|-------------|
-| [studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas) | Backend (this repo) |
-| [studyflow-saas-frontend](https://github.com/felipecorinthiano011/studyflow-saas-frontend) | Frontend (Angular + Tailwind) |
-
+[![Deploy Staging](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/deploy-staging.yml/badge.svg)](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/deploy-staging.yml)
+[![Deploy Production](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/deploy-prod.yml/badge.svg)](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/deploy-prod.yml)
+## Tech Stack
+### Backend
+| Technology | Purpose |
+|---|---|
+| Java 21 + Spring Boot 3.3 | Core framework |
+| Spring Security 6 + JWT | Authentication & authorisation |
+| PostgreSQL | Production database |
+| H2 | In-memory database for tests |
+| Redis | Distributed cache (`@Cacheable`) |
+| Bucket4j | Rate limiting (60 req/min per IP) |
+| Spring Events + Audit Log | Decoupled event-driven architecture |
+| Spring Actuator | Health check endpoint |
+| Sentry | Error monitoring & tracing |
+### Frontend
+| Technology | Purpose |
+|---|---|
+| Angular 21 (standalone) | SPA framework |
+| NgRx Signal Store | Reactive state management |
+| Tailwind CSS v4 | Utility-first styling |
+| @sentry/angular | Frontend error monitoring |
+| Cypress | E2E testing |
+### DevOps
+| Technology | Purpose |
+|---|---|
+| GitHub Actions | CI/CD pipelines |
+| Railway | Backend + Redis hosting |
+| Vercel | Frontend hosting |
+| Terraform | Infrastructure as Code |
 ---
-
-## Stack
-
-- **Java 21** · Spring Boot 3.3 · Spring Security 6
-- **PostgreSQL** (production) · H2 (tests)
-- **JWT** authentication · BCrypt password hashing
-- **Docker** · GitHub Actions CI/CD
-- **JUnit 5** · RestAssured · JMH (performance tests)
-
----
-
 ## Getting Started
-
-### Prerequisites
-
-- Java 21+
-- Docker & Docker Compose
-- Maven (or use the included `./mvnw` wrapper)
-
-### 1. Clone
-
+### 1. Clone & configure
 ```bash
 git clone https://github.com/felipecorinthiano011/studyflow-saas.git
-cd studyflow-saas/backend
-```
-
-### 2. Configure environment
-
-```bash
+cd studyflow-saas
 cp .env.example .env
-# Edit .env and set DB_PASSWORD and JWT_SECRET
+# Edit .env — set JWT_SECRET (min 32 chars)
 ```
-
-### 3. Run with Docker
-
+### 2. Run with Docker (full stack)
 ```bash
-# From the backend directory
 docker-compose up -d
+# Backend → http://localhost:8080
+# Redis   → localhost:6379
 ```
-
-The API will be available at `http://localhost:8080`.
-
-
-### 4. Run locally (without Docker)
-
-Start PostgreSQL first, then:
-
+### 3. Run frontend
 ```bash
-export DB_PASSWORD=your_password
-export JWT_SECRET=your-jwt-secret-32-chars-minimum
-./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+cd frontend && npm install && npm start
+# → http://localhost:4200
 ```
-
 ---
-
-## API Endpoints
-
-| Method | Path          | Auth | Description              |
-|--------|---------------|------|--------------------------|
-| POST   | /users        | ✗    | Register new user        |
-| POST   | /auth/login   | ✗    | Login → returns JWT      |
-| GET    | /users        | ✓    | List all users           |
-| GET    | /users/me     | ✓    | Get current user profile |
-| POST   | /study-items  | ✓    | Create study item        |
-| GET    | /study-items  | ✓    | List user's study items  |
-
-**Authentication:** include `Authorization: Bearer <token>` header for protected endpoints.
-
+## API Reference
+| Method | Path | Auth | Description |
+|--------|------|------|-------------|
+| `POST` | `/users` | ✗ | Register new user |
+| `POST` | `/auth/login` | ✗ | Login → returns JWT |
+| `GET` | `/users` | ✔ | List all users |
+| `GET` | `/users/me` | ✔ | Get current user profile |
+| `POST` | `/study-items` | ✔ | Create study item |
+| `GET` | `/study-items?page=0&size=20` | ✔ | List study items (paginated) |
+| `PUT` | `/study-items/{id}` | ✔ | Update study item |
+| `DELETE` | `/study-items/{id}` | ✔ | Delete study item |
+| `GET` | `/actuator/health` | ✗ | Health check |
+Paginated response:
+```json
+{
+  "content": [...],
+  "page": 0,
+  "size": 20,
+  "totalElements": 42,
+  "totalPages": 3,
+  "last": false
+}
+```
 ---
-
 ## Running Tests
-
 ```bash
-# All 35 tests (uses H2 in-memory — no DB required)
-./mvnw test
-
-# Specific suites
-./mvnw test -Dtest=FrontendIntegrationTest   # 8 E2E tests
-./mvnw test -Dtest=PerformanceTest           # 9 load/benchmark tests
-
-# With coverage report
+# All 67 tests (H2 in-memory)
+cd backend && ./mvnw test
+# With coverage (JaCoCo)
 ./mvnw clean test jacoco:report
-# Open: target/site/jacoco/index.html
-
-# Script (Windows)
-.\run-tests.bat
-
-# Script (Linux/Mac)
-chmod +x run-tests.sh && ./run-tests.sh
+# → target/site/jacoco/index.html
 ```
-
-### Test Suite (35 tests — all passing ✅)
-
-| Class                   | Tests | Type              |
-|-------------------------|-------|-------------------|
-| AuthControllerTest      | 3     | Controller / API  |
-| UserControllerTest      | 5     | Controller / API  |
-| StudyItemControllerTest | 4     | Controller / API  |
-| UserServiceTest         | 3     | Unit              |
-| JwtServiceTest          | 3     | Unit              |
-| FrontendIntegrationTest | 8     | E2E Integration   |
-| PerformanceTest         | 9     | Load / Benchmark  |
-
+### Test Suite (67 tests — all passing ✅)
+| Class | Tests |
+|---|---|
+| AuthControllerTest | 3 |
+| UserControllerTest | 5 |
+| StudyItemControllerTest | 5 |
+| UserServiceTest | 4 |
+| StudyItemServiceTest | 7 |
+| UserRepositoryTest | 4 |
+| StudyItemRepositoryTest | 5 |
+| JwtServiceTest | 4 |
+| JwtAuthenticationFilterTest | 5 |
+| UserDetailsServiceImplTest | 2 |
+| GlobalExceptionHandlerTest | 5 |
+| FrontendIntegrationTest | 8 |
+| PerformanceTest + PerformanceAndLoadTest | 10 |
 ---
-
-## CI/CD Pipeline
-
-On every push/PR to `main` or `develop`:
-
-1. **Build & Test** — compile + run all 35 tests against H2
-2. **Security Scan** — Trivy vulnerability scanner
-3. **Docker Build & Push** — push image to Docker Hub *(main branch only)*
-4. **Notify** — print pipeline summary
-
-**Required GitHub Secrets:**
-
-| Secret            | Description                  |
-|-------------------|------------------------------|
-| `DOCKER_USERNAME` | Docker Hub username          |
-| `DOCKER_PASSWORD` | Docker Hub access token      |
-| `SONAR_TOKEN`     | SonarCloud (optional)        |
-| `SLACK_WEBHOOK`   | Slack notifications (optional)|
-
+## CI/CD Pipelines
+| Workflow | Trigger | What it does |
+|---|---|---|
+| `ci-cd.yml` | push/PR to main or develop | Build, test, Trivy scan, Docker push |
+| `deploy-staging.yml` | push to develop | Tests → Docker → Railway staging → health check |
+| `deploy-prod.yml` | push to main / release | Tests → Docker → **blue-green deploy** → Vercel → Sentry release |
+### Blue-Green Deploy (deploy-prod.yml)
+1. Reads `ACTIVE_SLOT` variable (`blue` or `green`)
+2. Deploys new image to the **standby** slot
+3. Polls `/actuator/health` up to 8 times (120s)
+4. On success → updates `ACTIVE_SLOT` to point traffic to new slot
+5. On failure → keeps old slot live (automatic rollback)
+### Required GitHub Secrets
+| Secret | Description |
+|--------|-------------|
+| `DOCKER_USERNAME` / `DOCKER_PASSWORD` | Docker Hub |
+| `RAILWAY_TOKEN` | Railway API token |
+| `RAILWAY_STAGING_SERVICE_ID` | Railway staging service |
+| `RAILWAY_BLUE_SERVICE_ID` / `RAILWAY_GREEN_SERVICE_ID` | Blue-green slots |
+| `STAGING_URL` / `STANDBY_URL` / `APP_URL` | Service URLs for health checks |
+| `VERCEL_TOKEN` / `VERCEL_ORG_ID` / `VERCEL_PROJECT_ID` | Vercel |
+| `SENTRY_AUTH_TOKEN` / `SENTRY_ORG` / `SENTRY_PROJECT` / `SENTRY_DSN` | Sentry (optional) |
+| `GH_PAT` | PAT with `repo` scope (to update ACTIVE_SLOT variable) |
+### Required GitHub Variables
+| Variable | Value |
+|---|---|
+| `ACTIVE_SLOT` | `blue` or `green` |
 ---
-
-## Project Structure
-
+## Infrastructure as Code (Terraform)
+```bash
+cd terraform
+cp terraform.tfvars.example terraform.tfvars
+# Fill in real values
+terraform init
+terraform plan
+terraform apply
 ```
-backend/
-├── src/
-│   ├── main/java/com/studyflow/backend/
-│   │   ├── domain/user/         # User entity, repo, service, controller
-│   │   ├── domain/study/        # StudyItem entity, repo, service, controller
-│   │   ├── shared/dto/          # Request/Response DTOs
-│   │   ├── shared/exception/    # GlobalExceptionHandler
-│   │   └── security/            # JWT filter, service, config
-│   └── test/java/com/studyflow/backend/
-│       ├── controller/          # Controller unit tests
-│       ├── service/             # Service unit tests
-│       ├── security/            # JWT unit tests
-│       ├── integration/         # E2E integration tests
-│       └── performance/         # Load & benchmark tests
-├── .env.example                 # Environment variables template
-├── docker-compose.yml           # Local dev environment
-├── Dockerfile                   # Multi-stage production build
-├── ARCHITECTURE.md              # Detailed architecture docs
-└── pom.xml
-```
-
+Provisions: Railway project (production + staging envs), PostgreSQL, Redis, backend blue/green/staging services, and Vercel frontend project.
 ---
-
+## Key Features
+### Backend
+- ✅ **Pagination** — `PageResponseDTO<T>` on `GET /study-items`
+- ✅ **Redis Cache** — `@Cacheable` on list, `@CacheEvict` on mutations
+- ✅ **Rate Limiting** — Bucket4j 60 req/min per IP
+- ✅ **Audit Logging** — `AuditLog` entity via Spring Events
+- ✅ **Multi-tenancy** — `Organization` entity with nullable FK on User & StudyItem
+- ✅ **Sentry** — auto-captures exceptions per environment
+### Frontend
+- ✅ **NgRx Signal Store** — `StudyItemsStore` with optimistic updates + pagination
+- ✅ **Global Error Handling** — `GlobalErrorHandler` + `HttpErrorInterceptor` → toasts
+- ✅ **Cypress E2E** — register, login, create-item, delete-item specs
+- ✅ **Sentry Angular** — browserTracing + replay, disabled when DSN is empty
+### DevOps
+- ✅ **Staging environment** — `application-staging.properties` + `deploy-staging.yml`
+- ✅ **Blue-green deploy** — automatic rollback on health check failure
+- ✅ **Terraform IaC** — Railway + Vercel provisioned from code
+---
 ## Security
-
-- Passwords hashed with **BCrypt**
-- JWT tokens validated on every protected request
-- All credentials loaded from **environment variables** — no secrets in source code
-- Copy `.env.example` → `.env` and set values before running
-- Production profile uses only `${ENV_VAR}` references with no defaults
-
+- BCrypt password hashing
+- JWT validated on every protected request
+- All secrets via environment variables — no hardcoded credentials
+- `terraform.tfvars` excluded from git
 ---
-
 ## License
-
 MIT
