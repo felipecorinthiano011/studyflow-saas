@@ -2,6 +2,7 @@ package com.studyflow.backend.domain.user.service;
 
 import com.studyflow.backend.shared.dto.UserRequestDTO;
 import com.studyflow.backend.shared.dto.UserResponseDTO;
+import com.studyflow.backend.domain.organization.repository.OrganizationRepository;
 import com.studyflow.backend.domain.user.entity.User;
 import com.studyflow.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +21,7 @@ public class UserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final OrganizationRepository organizationRepository;
 
     public UserResponseDTO create(UserRequestDTO dto) {
         logger.info("Creating user with email: {}", dto.getEmail());
@@ -28,6 +30,7 @@ public class UserService {
                 .name(dto.getName())
                 .email(dto.getEmail())
                 .password(passwordEncoder.encode(dto.getPassword()))
+                .organization(organizationRepository.findByName("Default Organization").orElse(null))
                 .build();
 
         User saved = userRepository.save(user);
