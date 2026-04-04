@@ -1,4 +1,4 @@
-package com.studyflow.backend.dto;
+package com.studyflow.backend.shared.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

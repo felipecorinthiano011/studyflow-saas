@@ -1,8 +1,8 @@
-package com.studyflow.backend.controller;
+package com.studyflow.backend.domain.user.controller;
 
-import com.studyflow.backend.dto.UserRequestDTO;
-import com.studyflow.backend.dto.UserResponseDTO;
-import com.studyflow.backend.service.UserService;
+import com.studyflow.backend.shared.dto.UserRequestDTO;
+import com.studyflow.backend.shared.dto.UserResponseDTO;
+import com.studyflow.backend.domain.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

@@ -1,8 +1,9 @@
 package com.studyflow.backend.controller;
 
-import com.studyflow.backend.dto.LoginRequest;
-import com.studyflow.backend.entity.User;
-import com.studyflow.backend.repository.UserRepository;
+import com.studyflow.backend.shared.dto.LoginRequest;
+import com.studyflow.backend.domain.user.entity.User;
+import com.studyflow.backend.shared.exception.AuthenticationException;
+import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -47,21 +48,17 @@ public class AuthController {
         }
     )
     @PostMapping("/login")
-    public ResponseEntity<?> login(@RequestBody LoginRequest request) {
+    public Map<String, String> login(@RequestBody LoginRequest request) {
 
         User user = userRepository.findByEmail(request.getEmail())
-                .orElse(null);
-
-        if (user == null) {
-            return ResponseEntity.status(401).body("Usuário não encontrado");
-        }
+                .orElseThrow(() -> new AuthenticationException("Usuário não encontrado com o email fornecido"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            return ResponseEntity.status(401).body("Senha inválida");
+            throw new AuthenticationException("Senha incorreta");
         }
 
         String token = jwtService.generateToken(user.getEmail());
 
-        return ResponseEntity.ok(Map.of("token", token));
+        return Map.of("token", token);
     }
 }

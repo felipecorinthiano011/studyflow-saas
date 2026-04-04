@@ -1,104 +1,176 @@
 # StudyFlow Backend
 
-## Repositórios do Projeto
+> SaaS platform for study management — Java Spring Boot REST API with JWT authentication.
 
-| Parte | Repositório |
-|-------|-------------|
-| **Backend** (Java Spring Boot) | [felipecorinthiano011/studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas) |
-| **Frontend** (Angular + Tailwind) | [felipecorinthiano011/studyflow-saas-frontend](https://github.com/felipecorinthiano011/studyflow-saas-frontend) |
+[![CI/CD](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/ci-cd.yml/badge.svg)](https://github.com/felipecorinthiano011/studyflow-saas/actions/workflows/ci-cd.yml)
 
----
-
-## Descrição do Projeto
-
-O **StudyFlow** é um SaaS de estudo e aprendizado que tem como objetivo centralizar usuários e conteúdo de estudo de forma simples e escalável.  
-Este repositório contém o **backend em Java Spring Boot**, com PostgreSQL como banco de dados, autenticação via **JWT** e estrutura pronta para expansão futura.  
-
-O foco inicial é garantir que **usuários possam se cadastrar, logar e acessar recursos protegidos**, com segurança e escalabilidade em mente.
+| Repo | Description |
+|------|-------------|
+| [studyflow-saas](https://github.com/felipecorinthiano011/studyflow-saas) | Backend (this repo) |
+| [studyflow-saas-frontend](https://github.com/felipecorinthiano011/studyflow-saas-frontend) | Frontend (Angular + Tailwind) |
 
 ---
 
-## Status atual
+## Stack
 
-Atualmente, o projeto está na **Semana 4**, com o backend funcional, incluindo:
-
-- Banco PostgreSQL conectado e funcionando
-- Tabela `users` criada
-- Endpoint `POST /users` para criar usuários
-- Endpoint `POST /auth/login` para gerar token JWT (resposta padronizada em JSON)
-- Endpoint `GET /users` protegido via JWT
-- Endpoint `POST /study-items` para criar itens de estudo
-- Endpoint `GET /study-items` para listar itens do usuário autenticado
-- Docker configurado para backend e PostgreSQL (`Dockerfile` + `docker-compose.yml`)
-- Profiles separados para dev e prod (`application-dev.properties`, `application-prod.properties`)
-- Testes de integração com H2 em memória (`@ActiveProfiles("test")`)
-
-> **A partir da Semana 4**, o desenvolvimento e acompanhamento do projeto passam a contar com o suporte do **Claude (Anthropic)** como agente de IA — auxiliando na resolução de problemas, revisão de código, diagnóstico de erros e orientação de boas práticas.
+- **Java 21** · Spring Boot 3.3 · Spring Security 6
+- **PostgreSQL** (production) · H2 (tests)
+- **JWT** authentication · BCrypt password hashing
+- **Docker** · GitHub Actions CI/CD
+- **JUnit 5** · RestAssured · JMH (performance tests)
 
 ---
 
-## Plano de desenvolvimento — 8 semanas
+## Getting Started
 
-### Semana 1 
-- Setup do projeto Spring Boot
-- Configuração do banco PostgreSQL (`studyflow`)
-- Criação da entidade `User` e repositório `UserRepository`
-- Implementação do `UserService` com `PasswordEncoder` (BCrypt)
-- Configuração do `SecurityConfig` moderno (Spring Boot 3 / Security 6)
-- Criação de endpoints:
-  - `POST /users` → criar usuário
-  - `POST /auth/login` → gerar JWT
-  - `GET /users` → protegido via token
-- Testes completos via Postman/Swagger
+### Prerequisites
 
-### Semana 2 
-- Criar endpoint CRUD de **Produtos / Biblioteca**
-- Implementar **DTOs e validações**
-- Configurar testes unitários para novos endpoints
-- Testar segurança com JWT nos novos endpoints
+- Java 21+
+- Docker & Docker Compose
+- Maven (or use the included `./mvnw` wrapper)
 
-### Semana 3
-- Implementar **filtros e paginação**
-- Adicionar busca por nome/email nos recursos
-- Melhorar tratamento de erros via `GlobalExceptionHandler`
+### 1. Clone
 
-### Semana 4
-- Configurar **Docker** para backend e banco PostgreSQL
-- Preparar **application.properties** para ambientes dev e prod
-- Testar containers localmente
+```bash
+git clone https://github.com/felipecorinthiano011/studyflow-saas.git
+cd studyflow-saas/backend
+```
 
-### Semana 5
-- Preparar **Swagger** para documentação dos endpoints
-- Criar exemplos de requests/responses
-- Garantir consistência e validação dos dados
+### 2. Configure environment
 
-### Semana 6 (Atual)
-- Início da integração com **front-end Angular + Tailwind**
-- Testar chamadas de API com JWT do front-end
-- Criar componente simples de login e listagem de usuários
+```bash
+cp .env.example .env
+# Edit .env and set DB_PASSWORD and JWT_SECRET
+```
 
-### Semana 7
-- Implementar **CRUD completo no front-end**
-- Finalizar autenticação JWT no front-end
-- Ajustar estilo básico com Tailwind
+### 3. Run with Docker
 
-### Semana 8
-- Refatorar código backend e front-end
-- Revisar segurança e validação de dados
-- Preparar **documentação final do projeto**
-- Deploy inicial (AWS / Docker)  
+```bash
+# From the backend directory
+docker-compose up -d
+```
+
+The API will be available at `http://localhost:8080`.
+
+
+### 4. Run locally (without Docker)
+
+Start PostgreSQL first, then:
+
+```bash
+export DB_PASSWORD=your_password
+export JWT_SECRET=your-jwt-secret-32-chars-minimum
+./mvnw spring-boot:run -Dspring-boot.run.profiles=dev
+```
 
 ---
 
-## Tecnologias utilizadas
+## API Endpoints
 
-- Java 17+
-- Spring Boot 3
-- Spring Security 6
-- PostgreSQL
-- JWT (JSON Web Token)
-- Hibernate / JPA
-- Docker (Semana 4)
-- Angular + Tailwind (Front)
+| Method | Path          | Auth | Description              |
+|--------|---------------|------|--------------------------|
+| POST   | /users        | ✗    | Register new user        |
+| POST   | /auth/login   | ✗    | Login → returns JWT      |
+| GET    | /users        | ✓    | List all users           |
+| GET    | /users/me     | ✓    | Get current user profile |
+| POST   | /study-items  | ✓    | Create study item        |
+| GET    | /study-items  | ✓    | List user's study items  |
+
+**Authentication:** include `Authorization: Bearer <token>` header for protected endpoints.
 
 ---
+
+## Running Tests
+
+```bash
+# All 35 tests (uses H2 in-memory — no DB required)
+./mvnw test
+
+# Specific suites
+./mvnw test -Dtest=FrontendIntegrationTest   # 8 E2E tests
+./mvnw test -Dtest=PerformanceTest           # 9 load/benchmark tests
+
+# With coverage report
+./mvnw clean test jacoco:report
+# Open: target/site/jacoco/index.html
+
+# Script (Windows)
+.\run-tests.bat
+
+# Script (Linux/Mac)
+chmod +x run-tests.sh && ./run-tests.sh
+```
+
+### Test Suite (35 tests — all passing ✅)
+
+| Class                   | Tests | Type              |
+|-------------------------|-------|-------------------|
+| AuthControllerTest      | 3     | Controller / API  |
+| UserControllerTest      | 5     | Controller / API  |
+| StudyItemControllerTest | 4     | Controller / API  |
+| UserServiceTest         | 3     | Unit              |
+| JwtServiceTest          | 3     | Unit              |
+| FrontendIntegrationTest | 8     | E2E Integration   |
+| PerformanceTest         | 9     | Load / Benchmark  |
+
+---
+
+## CI/CD Pipeline
+
+On every push/PR to `main` or `develop`:
+
+1. **Build & Test** — compile + run all 35 tests against H2
+2. **Security Scan** — Trivy vulnerability scanner
+3. **Docker Build & Push** — push image to Docker Hub *(main branch only)*
+4. **Notify** — print pipeline summary
+
+**Required GitHub Secrets:**
+
+| Secret            | Description                  |
+|-------------------|------------------------------|
+| `DOCKER_USERNAME` | Docker Hub username          |
+| `DOCKER_PASSWORD` | Docker Hub access token      |
+| `SONAR_TOKEN`     | SonarCloud (optional)        |
+| `SLACK_WEBHOOK`   | Slack notifications (optional)|
+
+---
+
+## Project Structure
+
+```
+backend/
+├── src/
+│   ├── main/java/com/studyflow/backend/
+│   │   ├── domain/user/         # User entity, repo, service, controller
+│   │   ├── domain/study/        # StudyItem entity, repo, service, controller
+│   │   ├── shared/dto/          # Request/Response DTOs
+│   │   ├── shared/exception/    # GlobalExceptionHandler
+│   │   └── security/            # JWT filter, service, config
+│   └── test/java/com/studyflow/backend/
+│       ├── controller/          # Controller unit tests
+│       ├── service/             # Service unit tests
+│       ├── security/            # JWT unit tests
+│       ├── integration/         # E2E integration tests
+│       └── performance/         # Load & benchmark tests
+├── .env.example                 # Environment variables template
+├── docker-compose.yml           # Local dev environment
+├── Dockerfile                   # Multi-stage production build
+├── ARCHITECTURE.md              # Detailed architecture docs
+└── pom.xml
+```
+
+---
+
+## Security
+
+- Passwords hashed with **BCrypt**
+- JWT tokens validated on every protected request
+- All credentials loaded from **environment variables** — no secrets in source code
+- Copy `.env.example` → `.env` and set values before running
+- Production profile uses only `${ENV_VAR}` references with no defaults
+
+---
+
+## License
+
+MIT

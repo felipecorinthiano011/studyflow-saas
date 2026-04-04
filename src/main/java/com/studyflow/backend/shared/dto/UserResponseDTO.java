@@ -1,4 +1,4 @@
-package com.studyflow.backend.dto;
+package com.studyflow.backend.shared.dto;
 
 import lombok.Builder;
 import lombok.Data;

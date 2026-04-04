@@ -1,5 +1,6 @@
-package com.studyflow.backend.exception;
+package com.studyflow.backend.shared.exception;
 
+import com.studyflow.backend.shared.exception.AuthenticationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +43,18 @@ public class GlobalExceptionHandler {
         response.put("message", "Registro já existente (possível email duplicado)");
 
         return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+    }
+
+    // 🔹 Erro de autenticação
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("timestamp", Instant.now());
+        response.put("status", HttpStatus.UNAUTHORIZED.value());
+        response.put("message", ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
     }
 
     // 🔹 Erro genérico

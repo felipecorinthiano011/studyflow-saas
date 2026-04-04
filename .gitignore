@@ -31,3 +31,18 @@ build/
 
 ### VS Code ###
 .vscode/
+
+### Logs & temp files ###
+*.log
+test_results.txt
+test_output.log
+integration_test_output.log
+
+### Local dev config (contains credentials) ###
+src/main/resources/application-dev.properties
+
+### Environment files ###
+.env
+.env.local
+.env.*.local
+
