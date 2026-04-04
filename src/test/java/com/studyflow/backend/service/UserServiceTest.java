@@ -93,4 +93,35 @@ class UserServiceTest {
         assertEquals("User 2", result.get(1).getName());
         verify(userRepository).findAll();
     }
+
+    @Test
+    void shouldFindUserByEmailSuccessfully() {
+        User user = User.builder()
+                .id(1L)
+                .name("João Silva")
+                .email("joao@email.com")
+                .password("encodedPassword")
+                .build();
+
+        when(userRepository.findByEmail("joao@email.com")).thenReturn(Optional.of(user));
+
+        UserResponseDTO result = userService.findByEmail("joao@email.com");
+
+        assertNotNull(result);
+        assertEquals(1L, result.getId());
+        assertEquals("João Silva", result.getName());
+        assertEquals("joao@email.com", result.getEmail());
+        verify(userRepository).findByEmail("joao@email.com");
+    }
+
+    @Test
+    void shouldThrowWhenUserNotFoundByEmail() {
+        when(userRepository.findByEmail("notfound@email.com")).thenReturn(Optional.empty());
+
+        RuntimeException ex = assertThrows(RuntimeException.class,
+                () -> userService.findByEmail("notfound@email.com"));
+
+        assertEquals("User not found", ex.getMessage());
+        verify(userRepository).findByEmail("notfound@email.com");
+    }
 }
