@@ -1,11 +1,11 @@
-package com.studyflow.backend.service;
+package com.studyflow.backend.domain.study.service;
 
-import com.studyflow.backend.dto.StudyItemRequestDTO;
-import com.studyflow.backend.dto.StudyItemResponseDTO;
-import com.studyflow.backend.entity.StudyItem;
-import com.studyflow.backend.entity.User;
-import com.studyflow.backend.repository.StudyItemRepository;
-import com.studyflow.backend.repository.UserRepository;
+import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
+import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
+import com.studyflow.backend.domain.study.entity.StudyItem;
+import com.studyflow.backend.domain.user.entity.User;
+import com.studyflow.backend.domain.study.repository.StudyItemRepository;
+import com.studyflow.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 

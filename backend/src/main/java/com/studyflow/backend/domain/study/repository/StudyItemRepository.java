@@ -1,6 +1,6 @@
-package com.studyflow.backend.repository;
+package com.studyflow.backend.domain.study.repository;
 
-import com.studyflow.backend.entity.StudyItem;
+import com.studyflow.backend.domain.study.entity.StudyItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;

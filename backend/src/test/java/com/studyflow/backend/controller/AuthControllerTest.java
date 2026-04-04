@@ -1,10 +1,10 @@
 package com.studyflow.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.studyflow.backend.dto.LoginRequest;
-import com.studyflow.backend.entity.User;
-import com.studyflow.backend.exception.AuthenticationException;
-import com.studyflow.backend.repository.UserRepository;
+import com.studyflow.backend.shared.dto.LoginRequest;
+import com.studyflow.backend.domain.user.entity.User;
+import com.studyflow.backend.shared.exception.AuthenticationException;
+import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

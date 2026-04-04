@@ -1,9 +1,9 @@
-package com.studyflow.backend.service;
+package com.studyflow.backend.domain.user.service;
 
-import com.studyflow.backend.dto.UserRequestDTO;
-import com.studyflow.backend.dto.UserResponseDTO;
-import com.studyflow.backend.entity.User;
-import com.studyflow.backend.repository.UserRepository;
+import com.studyflow.backend.shared.dto.UserRequestDTO;
+import com.studyflow.backend.shared.dto.UserResponseDTO;
+import com.studyflow.backend.domain.user.entity.User;
+import com.studyflow.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

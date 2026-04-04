@@ -1,6 +1,6 @@
-package com.studyflow.backend.exception;
+package com.studyflow.backend.shared.exception;
 
-import com.studyflow.backend.exception.AuthenticationException;
+import com.studyflow.backend.shared.exception.AuthenticationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

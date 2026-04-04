@@ -1,4 +1,4 @@
-package com.studyflow.backend.exception;
+package com.studyflow.backend.shared.exception;
 
 public class AuthenticationException extends RuntimeException {
     public AuthenticationException(String message) {

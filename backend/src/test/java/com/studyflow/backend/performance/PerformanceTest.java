@@ -335,9 +335,9 @@ class PerformanceTest {
                 ╔════════════════════════════════════════╗
                 ║      VALIDAÇÃO DE SLA (< %d ms)       ║
                 ╠════════════════════════════════════════╣
-                ║ Criação de Usuário:    %d ms %%s      ║
-                ║ Login:                 %d ms %%s      ║
-                ║ Listagem:              %d ms %%s      ║
+                ║ Criação de Usuário:    %d ms %s      ║
+                ║ Login:                 %d ms %s      ║
+                ║ Listagem:              %d ms %s      ║
                 ╚════════════════════════════════════════╝
                 """,
                 SLA_THRESHOLD,

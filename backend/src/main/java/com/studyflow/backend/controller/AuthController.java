@@ -1,9 +1,9 @@
 package com.studyflow.backend.controller;
 
-import com.studyflow.backend.dto.LoginRequest;
-import com.studyflow.backend.entity.User;
-import com.studyflow.backend.exception.AuthenticationException;
-import com.studyflow.backend.repository.UserRepository;
+import com.studyflow.backend.shared.dto.LoginRequest;
+import com.studyflow.backend.domain.user.entity.User;
+import com.studyflow.backend.shared.exception.AuthenticationException;
+import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.security.JwtService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;

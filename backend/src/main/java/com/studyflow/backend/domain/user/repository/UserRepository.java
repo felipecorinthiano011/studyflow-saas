@@ -1,6 +1,6 @@
-package com.studyflow.backend.repository;
+package com.studyflow.backend.domain.user.repository;
 
-import com.studyflow.backend.entity.User;
+import com.studyflow.backend.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

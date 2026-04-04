@@ -1,4 +1,6 @@
-package com.studyflow.backend.entity;
+package com.studyflow.backend.domain.study.entity;
+
+import com.studyflow.backend.domain.user.entity.User;
 
 import jakarta.persistence.*;
 import lombok.*;

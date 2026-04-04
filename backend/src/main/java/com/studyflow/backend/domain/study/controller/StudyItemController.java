@@ -1,10 +1,10 @@
-package com.studyflow.backend.controller;
+package com.studyflow.backend.domain.study.controller;
 
-import com.studyflow.backend.dto.StudyItemRequestDTO;
-import com.studyflow.backend.dto.StudyItemResponseDTO;
-import com.studyflow.backend.entity.User;
-import com.studyflow.backend.repository.UserRepository;
-import com.studyflow.backend.service.StudyItemService;
+import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
+import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
+import com.studyflow.backend.domain.user.entity.User;
+import com.studyflow.backend.domain.user.repository.UserRepository;
+import com.studyflow.backend.domain.study.service.StudyItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.ExampleObject;

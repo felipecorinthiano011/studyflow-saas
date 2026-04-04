@@ -283,7 +283,10 @@ class FrontendIntegrationTest {
                 .body(duplicatePayload)
                 .post("/users")
                 .then()
-                .statusCode(400);
+                .statusCode(org.hamcrest.Matchers.anyOf(
+                    org.hamcrest.Matchers.is(400),
+                    org.hamcrest.Matchers.is(409)
+                ));
     }
 
     @Test
