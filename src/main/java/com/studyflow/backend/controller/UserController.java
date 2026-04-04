@@ -11,6 +11,8 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -63,5 +65,20 @@ public class UserController {
     @GetMapping
     public List<UserResponseDTO> listUsers() {
         return userService.findAll();
+    }
+
+    @Operation(
+        summary = "Obter perfil do usuário",
+        description = "Retorna os dados do usuário autenticado.",
+        security = @SecurityRequirement(name = "bearerAuth"),
+        responses = {
+            @ApiResponse(responseCode = "200", description = "Perfil retornado com sucesso"),
+            @ApiResponse(responseCode = "403", description = "Token ausente ou inválido")
+        }
+    )
+    @GetMapping("/me")
+    public UserResponseDTO getProfile(Authentication authentication) {
+        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
+        return userService.findByEmail(email);
     }
 }

@@ -5,6 +5,8 @@ import com.studyflow.backend.dto.UserResponseDTO;
 import com.studyflow.backend.entity.User;
 import com.studyflow.backend.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -14,10 +16,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserService {
 
+    private static final Logger logger = LoggerFactory.getLogger(UserService.class);
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     public UserResponseDTO create(UserRequestDTO dto) {
+        logger.info("Creating user with email: {}", dto.getEmail());
+
         User user = User.builder()
                 .name(dto.getName())
                 .email(dto.getEmail())
@@ -25,6 +31,7 @@ public class UserService {
                 .build();
 
         User saved = userRepository.save(user);
+        logger.info("User created successfully with ID: {}", saved.getId());
 
         return UserResponseDTO.builder()
                 .id(saved.getId())
@@ -34,13 +41,27 @@ public class UserService {
     }
 
     public List<UserResponseDTO> findAll() {
-        return userRepository.findAll()
-                .stream()
+        logger.info("Fetching all users");
+        List<User> users = userRepository.findAll();
+        logger.info("Found {} users", users.size());
+
+        return users.stream()
                 .map(user -> UserResponseDTO.builder()
                         .id(user.getId())
                         .name(user.getName())
                         .email(user.getEmail())
                         .build())
                 .toList();
+    }
+
+    public UserResponseDTO findByEmail(String email) {
+        logger.info("Finding user by email: {}", email);
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        return UserResponseDTO.builder()
+                .id(user.getId())
+                .name(user.getName())
+                .email(user.getEmail())
+                .build();
     }
 }
