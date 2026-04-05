@@ -39,7 +39,6 @@ jobs:
       # bootstrap in qodana.yaml also does this, but running it here lets us
       # cache the Maven repo and fail fast before Qodana spins up.
       - name: 🔨 Compile backend (skip tests & style checks)
-        working-directory: ./backend
         run: ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
 
       - name: 🔍 Qodana Scan

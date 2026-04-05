@@ -41,7 +41,6 @@ jobs:
           cache: maven
 
       - name: Run tests
-        working-directory: ./backend
         run: ./mvnw verify -q
         env:
           SPRING_PROFILES_ACTIVE: test
@@ -51,7 +50,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: test-results-staging
-          path: backend/target/surefire-reports/
+          path: target/surefire-reports/
           retention-days: 7
 
   # ─── 2. Build Docker image ────────────────────────────────────────────────────
@@ -87,7 +86,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v5
         with:
-          context: ./backend
+          context: .
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

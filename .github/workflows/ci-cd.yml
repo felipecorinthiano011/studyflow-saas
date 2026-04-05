@@ -23,31 +23,26 @@ jobs:
         cache: maven
 
     - name: 🔨 Build Backend (skip tests)
-      working-directory: ./backend
       run: ./mvnw clean package -DskipTests -q
 
     - name: 🧪 Run Unit Tests
-      working-directory: ./backend
       run: ./mvnw test -DskipITs -q
       env:
         SPRING_PROFILES_ACTIVE: test
 
     - name: 🔗 Run Integration Tests
-      working-directory: ./backend
       run: ./mvnw verify -Dtest=FrontendIntegrationTest -q
       env:
         SPRING_PROFILES_ACTIVE: test
       continue-on-error: true
 
     - name: 📊 Run Performance Tests
-      working-directory: ./backend
       run: ./mvnw test -Dtest=PerformanceTest -q
       env:
         SPRING_PROFILES_ACTIVE: test
       continue-on-error: true
 
     - name: 📈 Generate Coverage Report (JaCoCo)
-      working-directory: ./backend
       run: ./mvnw jacoco:report -q
       continue-on-error: true
 
@@ -56,13 +51,13 @@ jobs:
       uses: actions/upload-artifact@v4
       with:
         name: test-results
-        path: backend/target/surefire-reports/
+        path: target/surefire-reports/
         retention-days: 30
 
     - name: 📤 Upload Coverage to Codecov
       uses: codecov/codecov-action@v3
       with:
-        files: ./backend/target/site/jacoco/jacoco.xml
+        files: ./target/site/jacoco/jacoco.xml
         fail_ci_if_error: false
       continue-on-error: true
 
@@ -76,10 +71,10 @@ jobs:
         args: >
           -Dsonar.projectKey=felipecorinthiano011_studyflow-saas
           -Dsonar.organization=felipecorinthiano011
-          -Dsonar.sources=backend/src/main/java
-          -Dsonar.tests=backend/src/test/java
-          -Dsonar.java.binaries=backend/target/classes
-          -Dsonar.coverage.jacoco.xmlReportPaths=backend/target/site/jacoco/jacoco.xml
+          -Dsonar.sources=src/main/java
+          -Dsonar.tests=src/test/java
+          -Dsonar.java.binaries=target/classes
+          -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml
       continue-on-error: true
 
   # ─── JOB 2: Security Scan ───────────────────────────────────────────────────
@@ -132,7 +127,7 @@ jobs:
     - name: 🏗️ Build and push Backend image
       uses: docker/build-push-action@v5
       with:
-        context: ./backend
+        context: .
         push: true
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/studyflow-backend:latest

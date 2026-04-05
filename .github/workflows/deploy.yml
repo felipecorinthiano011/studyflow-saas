@@ -32,7 +32,6 @@ jobs:
         cache: maven
 
     - name: 🔨 Build Backend
-      working-directory: ./backend
       run: ./mvnw clean package -DskipTests -q
 
     - name: 🐳 Set up Docker Buildx
@@ -47,7 +46,7 @@ jobs:
     - name: 📤 Build and Push Docker image
       uses: docker/build-push-action@v5
       with:
-        context: ./backend
+        context: .
         push: true
         tags: |
           ${{ secrets.DOCKER_USERNAME }}/studyflow-backend:${{ github.sha }}
