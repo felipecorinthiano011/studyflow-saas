@@ -1,0 +1,11 @@
+# Example variable values — copy to terraform.tfvars and fill in real values.
+# NEVER commit terraform.tfvars to source control.
+
+railway_token        = "your-railway-token-here"
+vercel_token         = "your-vercel-token-here"
+github_repo          = "your-github-username/studyflow-saas"
+jwt_secret           = "your-super-secret-jwt-key-min-32-chars"
+sentry_dsn           = ""        # optional: paste your Sentry DSN
+vercel_team_id       = ""        # leave empty for personal Vercel account
+railway_project_name = "studyflow-saas"
+

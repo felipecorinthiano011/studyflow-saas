@@ -7,6 +7,7 @@ public class ErrorMessages {
     public static final String USER_NOT_FOUND = "Usuário não encontrado";
     public static final String USER_ALREADY_EXISTS = "Usuário já existe";
     public static final String INVALID_EMAIL = "Email inválido";
+    @SuppressWarnings("java:S2068") // Not a hard-coded password — this is a validation error message
     public static final String INVALID_PASSWORD = "Senha não atende aos requisitos";
     public static final String UNAUTHORIZED = "Acesso não autorizado";
     public static final String INVALID_CREDENTIALS = "Email ou senha incorretos";

@@ -123,6 +123,24 @@ class StudyItemControllerTest {
         mockMvc.perform(get("/study-items")
                         .header("Authorization", "Bearer " + token))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$[0].title").value("Item Teste"));
+                .andExpect(jsonPath("$.content[0].title").value("Item Teste"));
+    }
+
+    @Test
+    void shouldDeleteAllStudyItems() throws Exception {
+
+        StudyItemRequestDTO dto = StudyItemRequestDTO.builder()
+                .title("Item para deletar")
+                .description("Será deletado")
+                .build();
+
+        mockMvc.perform(post("/study-items")
+                .header("Authorization", "Bearer " + token)
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(dto)));
+
+        mockMvc.perform(delete("/study-items")
+                        .header("Authorization", "Bearer " + token))
+                .andExpect(status().isNoContent());
     }
 }
