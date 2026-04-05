@@ -73,8 +73,11 @@ docker-compose up -d
 
 ### 3. Run the frontend
 
+The frontend lives in its own repository:
+
 ```bash
-cd frontend
+git clone https://github.com/felipecorinthiano011/studyflow-saas-frontend.git
+cd studyflow-saas-frontend
 npm install
 npx ng serve
 # → http://localhost:4200
@@ -256,7 +259,6 @@ studyflow-saas/
 │   ├── docker-compose.yml       # Local dev stack (API + PostgreSQL + Redis)
 │   ├── Dockerfile               # Multi-stage production build
 │   └── pom.xml
-├── frontend/                    # Angular 21 SPA
 ├── terraform/                   # IaC — Railway + Vercel
 ├── .github/workflows/           # CI/CD pipelines
 ├── run-tests.bat                # Test runner (Windows)
