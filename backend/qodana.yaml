@@ -1,0 +1,63 @@
+#-------------------------------------------------------------------------------#
+#               Qodana analysis is configured by qodana.yaml file               #
+#             https://www.jetbrains.com/help/qodana/qodana-yaml.html            #
+#-------------------------------------------------------------------------------#
+version: "1.0"
+
+# Use JVM Community linter (free). Upgrade to qodana-jvm for security & licence checks.
+linter: jetbrains/qodana-jvm-community:2025.3   # latest stable (2026.1 not yet published)
+
+# JDK version (must match pom.xml java.version)
+projectJDK: "21"
+
+# Use the recommended profile — broader than 'starter', covers Spring & security patterns
+profile:
+  name: qodana.recommended
+
+# Compile the project before analysis so Qodana can resolve all types
+bootstrap: chmod +x mvnw && ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
+
+# ── Inspections to ENABLE beyond the profile defaults ─────────────────────────
+include:
+  # Spring-specific wiring checks
+  - name: SpringJavaInjectionPointsAutowiringInspection
+  - name: SpringTransactionalComponentInspection
+  - name: SpringEventListenerInspection
+  # Security
+  - name: HardcodedCredentials
+  - name: InsecureRandomNumberGeneration
+  # Potential bugs
+  - name: ConstantConditions
+  - name: NullableProblems
+
+# ── Inspections to DISABLE (noise / project conventions) ─────────────────────
+exclude:
+  # DTOs and events are plain data-carriers — no need for logic inspections
+  - name: All
+    paths:
+      - src/main/java/com/studyflow/backend/shared/dto
+      - src/main/java/com/studyflow/backend/shared/constant
+      - src/main/java/com/studyflow/backend/shared/event
+  # Entity classes use Lombok — suppress field-level style warnings
+  - name: FieldCanBeLocal
+    paths:
+      - src/main/java/com/studyflow/backend/domain
+  # Performance tests intentionally use void returns — suppress assertion warnings
+  - name: JUnitTestMethodWithNoAssertions
+    paths:
+      - src/test/java/com/studyflow/backend/performance
+      - src/test/java/com/studyflow/backend/integration
+  # Spring @Value on non-final fields is expected
+  - name: SpringAutowiredFieldsWarningInspection
+  # Suppress "class can be record" — entities & Spring beans cannot be records
+  - name: ClassCanBeRecord
+
+# ── Quality Gate ──────────────────────────────────────────────────────────────
+# Fail CI if any CRITICAL issue is found, or more than 5 HIGH-severity issues
+failureConditions:
+  severityThresholds:
+    critical: 0
+    high: 5
+    any: 50
+
+

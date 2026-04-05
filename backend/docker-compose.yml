@@ -5,9 +5,9 @@ services:
     image: postgres:16-alpine
     container_name: studyflow-postgres
     environment:
-      POSTGRES_DB: studyflow
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: 97553796
+      POSTGRES_DB: ${DB_NAME:-studyflow}
+      POSTGRES_USER: ${DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
     ports:
       - "5432:5432"
     volumes:
@@ -18,6 +18,17 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    container_name: studyflow-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
   backend:
     build: .
     container_name: studyflow-backend
@@ -25,13 +36,17 @@ services:
       SPRING_PROFILES_ACTIVE: prod
       DB_HOST: postgres
       DB_PORT: 5432
-      DB_NAME: studyflow
-      DB_USER: postgres
-      DB_PASSWORD: 97553796
+      DB_NAME: ${DB_NAME:-studyflow}
+      DB_USER: ${DB_USER:-postgres}
+      DB_PASSWORD: ${DB_PASSWORD:?DB_PASSWORD is required}
+      JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
+      REDIS_URL: redis://redis:6379
     ports:
       - "8080:8080"
     depends_on:
       postgres:
+        condition: service_healthy
+      redis:
         condition: service_healthy
 
 volumes:

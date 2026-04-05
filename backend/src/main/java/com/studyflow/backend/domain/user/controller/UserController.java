@@ -1,5 +1,6 @@
 package com.studyflow.backend.domain.user.controller;
 
+import com.studyflow.backend.common.helper.AuthenticationHelper;
 import com.studyflow.backend.shared.dto.UserRequestDTO;
 import com.studyflow.backend.shared.dto.UserResponseDTO;
 import com.studyflow.backend.domain.user.service.UserService;
@@ -12,7 +13,6 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -24,6 +24,7 @@ import java.util.List;
 public class UserController {
 
     private final UserService userService;
+    private final AuthenticationHelper authHelper;
 
     @Operation(
         summary = "Criar usuário",
@@ -78,7 +79,6 @@ public class UserController {
     )
     @GetMapping("/me")
     public UserResponseDTO getProfile(Authentication authentication) {
-        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
-        return userService.findByEmail(email);
+        return userService.findByEmail(authHelper.getAuthenticatedUser(authentication).getEmail());
     }
 }
