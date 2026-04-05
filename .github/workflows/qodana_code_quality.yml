@@ -44,6 +44,9 @@ jobs:
       - name: 🔨 Compile backend (skip tests & style checks)
         run: ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
 
+      - name: 🔒 Configure git safe directory for Qodana container
+        run: git config --global --add safe.directory "$GITHUB_WORKSPACE"
+
       - name: 🔍 Qodana Scan
         uses: JetBrains/qodana-action@v2025.3   # latest stable: v2025.3.2 (v2026.1 not yet published)
         env:
