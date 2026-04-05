@@ -1,5 +1,7 @@
 package com.studyflow.backend.domain.study.service;
 
+import com.studyflow.backend.common.mapper.StudyItemMapper;
+import com.studyflow.backend.shared.constant.ErrorMessages;
 import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
 import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
 import com.studyflow.backend.domain.study.entity.StudyItem;
@@ -9,6 +11,8 @@ import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.shared.event.StudyItemCreatedEvent;
 import com.studyflow.backend.shared.event.StudyItemDeletedEvent;
 import com.studyflow.backend.shared.event.StudyItemUpdatedEvent;
+import com.studyflow.backend.shared.exception.DomainAccessDeniedException;
+import com.studyflow.backend.shared.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
@@ -30,7 +34,7 @@ public class StudyItemService {
     @CacheEvict(value = "study-items", allEntries = true)
     public StudyItemResponseDTO create(StudyItemRequestDTO dto, Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
 
         Long orgId = user.getOrganization() != null ? user.getOrganization().getId() : null;
 
@@ -44,16 +48,16 @@ public class StudyItemService {
 
         StudyItem saved = studyItemRepository.save(studyItem);
         eventPublisher.publishEvent(new StudyItemCreatedEvent(this, saved.getId(), userId));
-        return mapToResponse(saved);
+        return StudyItemMapper.toDTO(saved);
     }
 
     @CacheEvict(value = "study-items", allEntries = true)
     public StudyItemResponseDTO update(Long id, StudyItemRequestDTO dto, Long userId) {
         StudyItem item = studyItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.STUDY_ITEM_NOT_FOUND));
 
         if (!item.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Access denied");
+            throw new DomainAccessDeniedException(ErrorMessages.ACCESS_DENIED);
         }
 
         item.setTitle(dto.getTitle());
@@ -61,16 +65,16 @@ public class StudyItemService {
 
         StudyItem saved = studyItemRepository.save(item);
         eventPublisher.publishEvent(new StudyItemUpdatedEvent(this, saved.getId(), userId));
-        return mapToResponse(saved);
+        return StudyItemMapper.toDTO(saved);
     }
 
     @CacheEvict(value = "study-items", allEntries = true)
     public void delete(Long id, Long userId) {
         StudyItem item = studyItemRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Item not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.STUDY_ITEM_NOT_FOUND));
 
         if (!item.getUser().getId().equals(userId)) {
-            throw new RuntimeException("Access denied");
+            throw new DomainAccessDeniedException(ErrorMessages.ACCESS_DENIED);
         }
 
         studyItemRepository.delete(item);
@@ -87,15 +91,6 @@ public class StudyItemService {
             key = "#userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public Page<StudyItemResponseDTO> findAllByUser(Long userId, Pageable pageable) {
         return studyItemRepository.findByUserId(userId, pageable)
-                .map(this::mapToResponse);
-    }
-
-    private StudyItemResponseDTO mapToResponse(StudyItem studyItem) {
-        return StudyItemResponseDTO.builder()
-                .id(studyItem.getId())
-                .title(studyItem.getTitle())
-                .description(studyItem.getDescription())
-                .createdAt(studyItem.getCreatedAt())
-                .build();
+                .map(StudyItemMapper::toDTO);
     }
 }

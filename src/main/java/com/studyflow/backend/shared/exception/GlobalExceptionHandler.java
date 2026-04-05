@@ -1,6 +1,5 @@
 package com.studyflow.backend.shared.exception;
 
-import com.studyflow.backend.shared.exception.AuthenticationException;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,56 +14,63 @@ import java.util.Map;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    // 🔹 Erros de validação (@Valid)
+    // ── Validation errors (@Valid) ───────────────────────────────────────────
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<Map<String, Object>> handleValidationErrors(MethodArgumentNotValidException ex) {
+        Map<String, String> fieldErrors = new HashMap<>();
+        ex.getBindingResult().getFieldErrors()
+                .forEach(e -> fieldErrors.put(e.getField(), e.getDefaultMessage()));
 
-        Map<String, String> errors = new HashMap<>();
-
-        ex.getBindingResult().getFieldErrors().forEach(error ->
-                errors.put(error.getField(), error.getDefaultMessage())
-        );
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", Instant.now());
-        response.put("status", HttpStatus.BAD_REQUEST.value());
-        response.put("errors", errors);
-
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+        Map<String, Object> body = buildErrorResponse(HttpStatus.BAD_REQUEST, null);
+        body.put("errors", fieldErrors);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
     }
 
-    // 🔹 Erro de banco (ex: email duplicado)
+    // ── Database integrity (e.g. duplicate email) ────────────────────────────
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ResponseEntity<Map<String, Object>> handleDataIntegrity(DataIntegrityViolationException ex) {
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", Instant.now());
-        response.put("status", HttpStatus.CONFLICT.value());
-        response.put("message", "Registro já existente (possível email duplicado)");
-
-        return ResponseEntity.status(HttpStatus.CONFLICT).body(response);
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(buildErrorResponse(HttpStatus.CONFLICT,
+                        "Registro já existente (possível email duplicado)"));
     }
 
-    // 🔹 Erro de autenticação
+    // ── Authentication errors ────────────────────────────────────────────────
     @ExceptionHandler(AuthenticationException.class)
     public ResponseEntity<Map<String, Object>> handleAuthentication(AuthenticationException ex) {
-
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", Instant.now());
-        response.put("status", HttpStatus.UNAUTHORIZED.value());
-        response.put("message", ex.getMessage());
-
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
+        return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
+                .body(buildErrorResponse(HttpStatus.UNAUTHORIZED, ex.getMessage()));
     }
 
-    // 🔹 Erro genérico
+    // ── Resource not found ───────────────────────────────────────────────────
+    @ExceptionHandler(ResourceNotFoundException.class)
+    public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
+        return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                .body(buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    // ── Domain access denied ─────────────────────────────────────────────────
+    @ExceptionHandler(DomainAccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleDomainAccessDenied(DomainAccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage()));
+    }
+
+    // ── Generic fallback ─────────────────────────────────────────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
-        Map<String, Object> response = new HashMap<>();
-        response.put("timestamp", Instant.now());
-        response.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-        response.put("message", "Erro interno no servidor");
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
+                        "Erro interno no servidor"));
+    }
 
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+    // ── Shared helper ────────────────────────────────────────────────────────
+    private Map<String, Object> buildErrorResponse(HttpStatus status, String message) {
+        Map<String, Object> body = new HashMap<>();
+        body.put("timestamp", Instant.now());
+        body.put("status", status.value());
+        if (message != null) {
+            body.put("message", message);
+        }
+        return body;
     }
 }

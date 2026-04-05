@@ -1,10 +1,10 @@
 package com.studyflow.backend.domain.study.controller;
 
+import com.studyflow.backend.common.helper.AuthenticationHelper;
 import com.studyflow.backend.shared.dto.PageResponseDTO;
 import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
 import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
 import com.studyflow.backend.domain.user.entity.User;
-import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.domain.study.service.StudyItemService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -20,7 +20,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -38,10 +37,8 @@ import org.springframework.web.bind.annotation.RestController;
 @SecurityRequirement(name = "bearerAuth")
 public class StudyItemController {
 
-    private static final int DEFAULT_PAGE_SIZE = 20;
-
     private final StudyItemService studyItemService;
-    private final UserRepository userRepository;
+    private final AuthenticationHelper authHelper;
 
     @Operation(summary = "Criar item de estudo",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
@@ -56,7 +53,7 @@ public class StudyItemController {
     @PostMapping
     public StudyItemResponseDTO create(@Valid @RequestBody StudyItemRequestDTO dto,
             Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+        User user = authHelper.getAuthenticatedUser(authentication);
         return studyItemService.create(dto, user.getId());
     }
 
@@ -70,11 +67,9 @@ public class StudyItemController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "20") int size,
             Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
-        Pageable pageable = PageRequest.of(page, size,
-                Sort.by("createdAt").descending());
-        Page<StudyItemResponseDTO> result =
-                studyItemService.findAllByUser(user.getId(), pageable);
+        User user = authHelper.getAuthenticatedUser(authentication);
+        Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
+        Page<StudyItemResponseDTO> result = studyItemService.findAllByUser(user.getId(), pageable);
         return PageResponseDTO.of(result);
     }
 
@@ -92,7 +87,7 @@ public class StudyItemController {
     public StudyItemResponseDTO update(@PathVariable Long id,
             @Valid @RequestBody StudyItemRequestDTO dto,
             Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+        User user = authHelper.getAuthenticatedUser(authentication);
         return studyItemService.update(id, dto, user.getId());
     }
 
@@ -104,7 +99,7 @@ public class StudyItemController {
         })
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+        User user = authHelper.getAuthenticatedUser(authentication);
         studyItemService.delete(id, user.getId());
         return ResponseEntity.noContent().build();
     }
@@ -116,14 +111,8 @@ public class StudyItemController {
         })
     @DeleteMapping
     public ResponseEntity<Void> deleteAll(Authentication authentication) {
-        User user = getAuthenticatedUser(authentication);
+        User user = authHelper.getAuthenticatedUser(authentication);
         studyItemService.deleteAll(user.getId());
         return ResponseEntity.noContent().build();
-    }
-
-    private User getAuthenticatedUser(Authentication authentication) {
-        String email = ((UserDetails) authentication.getPrincipal()).getUsername();
-        return userRepository.findByEmail(email)
-                .orElseThrow(() -> new RuntimeException("User not found"));
     }
 }
