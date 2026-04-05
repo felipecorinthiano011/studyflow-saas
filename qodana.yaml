@@ -15,7 +15,7 @@ profile:
   name: qodana.recommended
 
 # Compile the project before analysis so Qodana can resolve all types
-bootstrap: ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
+bootstrap: chmod +x mvnw && ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
 
 # ── Inspections to ENABLE beyond the profile defaults ─────────────────────────
 include:

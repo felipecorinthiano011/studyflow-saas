@@ -38,6 +38,9 @@ jobs:
       # Compile the project so Qodana can resolve all types and dependencies.
       # bootstrap in qodana.yaml also does this, but running it here lets us
       # cache the Maven repo and fail fast before Qodana spins up.
+      - name: 🔧 Make mvnw executable
+        run: chmod +x mvnw
+
       - name: 🔨 Compile backend (skip tests & style checks)
         run: ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
 
