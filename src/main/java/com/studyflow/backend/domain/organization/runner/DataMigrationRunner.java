@@ -2,7 +2,9 @@ package com.studyflow.backend.domain.organization.runner;
 
 import com.studyflow.backend.domain.organization.entity.Organization;
 import com.studyflow.backend.domain.organization.repository.OrganizationRepository;
+import com.studyflow.backend.domain.study.entity.StudyItem;
 import com.studyflow.backend.domain.study.repository.StudyItemRepository;
+import com.studyflow.backend.domain.user.entity.User;
 import com.studyflow.backend.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
@@ -13,6 +15,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Component
 @RequiredArgsConstructor
@@ -37,17 +40,19 @@ public class DataMigrationRunner implements ApplicationRunner {
                             .build());
                 });
 
-        long usersUpdated = userRepository.findAll().stream()
+        List<User> usersToUpdate = userRepository.findAll().stream()
                 .filter(u -> u.getOrganization() == null)
-                .peek(u -> u.setOrganization(defaultOrg))
-                .map(userRepository::save)
-                .count();
+                .toList();
+        usersToUpdate.forEach(u -> u.setOrganization(defaultOrg));
+        userRepository.saveAll(usersToUpdate);
+        long usersUpdated = usersToUpdate.size();
 
-        long itemsUpdated = studyItemRepository.findAll().stream()
+        List<StudyItem> itemsToUpdate = studyItemRepository.findAll().stream()
                 .filter(item -> item.getOrgId() == null)
-                .peek(item -> item.setOrgId(defaultOrg.getId()))
-                .map(studyItemRepository::save)
-                .count();
+                .toList();
+        itemsToUpdate.forEach(item -> item.setOrgId(defaultOrg.getId()));
+        studyItemRepository.saveAll(itemsToUpdate);
+        long itemsUpdated = itemsToUpdate.size();
 
         if (usersUpdated > 0 || itemsUpdated > 0) {
             logger.info("Migration complete: {} users and {} items assigned to default org",

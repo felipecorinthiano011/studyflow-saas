@@ -42,7 +42,7 @@ public class StudyItem {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(name = "org_id", nullable = true)
+    @Column(name = "org_id")
     private Long orgId;
 }
 
