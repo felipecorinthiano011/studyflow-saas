@@ -27,7 +27,7 @@ public class UserService {
     private final OrganizationRepository organizationRepository;
 
     public UserResponseDTO create(UserRequestDTO dto) {
-        logger.info("Creating user with email: {}", dto.getEmail());
+        logger.info("Creating new user");
 
         User user = User.builder()
                 .name(dto.getName())
@@ -49,7 +49,7 @@ public class UserService {
     }
 
     public UserResponseDTO findByEmail(String email) {
-        logger.info("Finding user by email: {}", email);
+        logger.info("Finding user by email");
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
         return UserMapper.toDTO(user);

@@ -74,7 +74,7 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Senha incorreta"));
+                .andExpect(jsonPath("$.message").value("Email ou senha incorretos"));
     }
 
     @Test
@@ -85,7 +85,7 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isUnauthorized())
-                .andExpect(jsonPath("$.message").value("Usuário não encontrado com o email fornecido"));
+                .andExpect(jsonPath("$.message").value("Email ou senha incorretos"));
     }
 }
 
