@@ -3,8 +3,32 @@ name: CI/CD Pipeline
 on:
   push:
     branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker/**'
+      - 'pom.xml'
+      - 'package.json'
+      - 'src/**'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.github/workflows/**'
   pull_request:
     branches: [ main, develop ]
+    paths:
+      - 'backend/**'
+      - 'frontend/**'
+      - 'docker/**'
+      - 'pom.xml'
+      - 'package.json'
+      - 'src/**'
+      - 'Dockerfile'
+      - 'docker-compose.yml'
+      - '.github/workflows/**'
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 jobs:
   # ─── JOB 1: Build + Tests ───────────────────────────────────────────────────
@@ -21,6 +45,14 @@ jobs:
         java-version: '21'
         distribution: 'temurin'
         cache: maven
+
+    - name: 📦 Cache npm dependencies
+      uses: actions/cache@v4
+      with:
+        path: ~/.npm
+        key: ${{ runner.os }}-npm-${{ hashFiles('**/package-lock.json') }}
+        restore-keys: |
+          ${{ runner.os }}-npm-
 
     - name: 🔧 Make mvnw executable
       run: chmod +x mvnw
