@@ -3,6 +3,7 @@ package com.studyflow.backend.shared.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Builder;
 import lombok.Data;
 
@@ -21,6 +22,7 @@ public class UserRequestDTO {
     private String email;
 
     @NotBlank(message = "Senha é obrigatória")
+    @Size(min = 8, max = 128, message = "Senha deve ter entre 8 e 128 caracteres")
     @Schema(description = "Senha de acesso", example = "senha123", requiredMode = Schema.RequiredMode.REQUIRED)
     private String password;
 }

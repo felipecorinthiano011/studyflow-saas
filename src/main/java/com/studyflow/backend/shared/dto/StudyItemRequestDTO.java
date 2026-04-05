@@ -5,6 +5,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lombok.*;
 
+import com.studyflow.backend.shared.constant.ValidationPatterns;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -14,11 +16,11 @@ import lombok.*;
 public class StudyItemRequestDTO {
 
     @NotBlank(message = "Title is required")
-    @Size(max = 255, message = "Title must have at most 255 characters")
+    @Size(max = ValidationPatterns.MAX_TITLE_LENGTH, message = "Title must have at most {max} characters")
     @Schema(description = "Título do item de estudo", example = "Estudar Spring Boot", requiredMode = Schema.RequiredMode.REQUIRED)
     private String title;
 
-    @Size(max = 2000, message = "Description must have at most 2000 characters")
+    @Size(max = ValidationPatterns.MAX_DESCRIPTION_LENGTH, message = "Description must have at most {max} characters")
     @Schema(description = "Descrição detalhada", example = "Revisar autenticação JWT e filtros de segurança")
     private String description;
 }

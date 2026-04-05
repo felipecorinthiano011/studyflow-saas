@@ -49,7 +49,7 @@ class StudyItemControllerTest {
         UserRequestDTO user = UserRequestDTO.builder()
                 .name("Teste User")
                 .email("teste@study.com")
-                .password("123456")
+                .password("senha123")
                 .build();
 
         mockMvc.perform(post("/users")
@@ -57,7 +57,7 @@ class StudyItemControllerTest {
                 .content(objectMapper.writeValueAsString(user)));
 
         // 2️⃣ Fazer login
-        LoginRequest login = new LoginRequest("teste@study.com", "123456");
+        LoginRequest login = new LoginRequest("teste@study.com", "senha123");
 
         String response = mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
