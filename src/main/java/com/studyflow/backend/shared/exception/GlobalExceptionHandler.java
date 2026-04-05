@@ -1,8 +1,10 @@
 package com.studyflow.backend.shared.exception;
 
+import com.studyflow.backend.shared.constant.ErrorMessages;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
@@ -46,6 +48,13 @@ public class GlobalExceptionHandler {
     public ResponseEntity<Map<String, Object>> handleResourceNotFound(ResourceNotFoundException ex) {
         return ResponseEntity.status(HttpStatus.NOT_FOUND)
                 .body(buildErrorResponse(HttpStatus.NOT_FOUND, ex.getMessage()));
+    }
+
+    // ── Spring Security method-level access denied (@PreAuthorize) ───────────
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<Map<String, Object>> handleAccessDenied(AccessDeniedException ex) {
+        return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(buildErrorResponse(HttpStatus.FORBIDDEN, ErrorMessages.UNAUTHORIZED));
     }
 
     // ── Domain access denied ─────────────────────────────────────────────────

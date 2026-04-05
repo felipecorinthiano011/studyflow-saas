@@ -2,10 +2,9 @@ package com.studyflow.backend.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyflow.backend.shared.dto.LoginRequest;
+import com.studyflow.backend.shared.dto.RefreshTokenRequest;
 import com.studyflow.backend.domain.user.entity.User;
-import com.studyflow.backend.shared.exception.AuthenticationException;
 import com.studyflow.backend.domain.user.repository.UserRepository;
-import com.studyflow.backend.security.JwtService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -63,7 +62,57 @@ class AuthControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(objectMapper.writeValueAsString(request)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.token", notNullValue()));
+                .andExpect(jsonPath("$.token", notNullValue()))
+                .andExpect(jsonPath("$.refreshToken", notNullValue()))
+                .andExpect(jsonPath("$.tokenType").value("Bearer"));
+    }
+
+    @Test
+    void shouldRefreshTokenSuccessfully() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("test@email.com", "senha123");
+        String loginResponse = mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String refreshToken = objectMapper.readTree(loginResponse).get("refreshToken").asText();
+
+        RefreshTokenRequest refreshRequest = new RefreshTokenRequest(refreshToken);
+        mockMvc.perform(post("/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(refreshRequest)))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.token", notNullValue()))
+                .andExpect(jsonPath("$.refreshToken", notNullValue()));
+    }
+
+    @Test
+    void shouldLogoutSuccessfully() throws Exception {
+        LoginRequest loginRequest = new LoginRequest("test@email.com", "senha123");
+        String loginResponse = mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(loginRequest)))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        String refreshToken = objectMapper.readTree(loginResponse).get("refreshToken").asText();
+
+        RefreshTokenRequest logoutRequest = new RefreshTokenRequest(refreshToken);
+        mockMvc.perform(post("/auth/logout")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(logoutRequest)))
+                .andExpect(status().isNoContent());
+    }
+
+    @Test
+    void shouldFailRefreshWithInvalidToken() throws Exception {
+        RefreshTokenRequest request = new RefreshTokenRequest("invalid-token");
+
+        mockMvc.perform(post("/auth/refresh")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(request)))
+                .andExpect(status().isUnauthorized());
     }
 
     @Test

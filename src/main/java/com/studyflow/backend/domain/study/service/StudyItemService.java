@@ -1,6 +1,7 @@
 package com.studyflow.backend.domain.study.service;
 
 import com.studyflow.backend.common.mapper.StudyItemMapper;
+import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.shared.constant.ErrorMessages;
 import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
 import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
@@ -30,6 +31,7 @@ public class StudyItemService {
     private final StudyItemRepository studyItemRepository;
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final AuditLogService auditLogService;
 
     @CacheEvict(value = "study-items", allEntries = true)
     public StudyItemResponseDTO create(StudyItemRequestDTO dto, Long userId) {
@@ -48,6 +50,8 @@ public class StudyItemService {
 
         StudyItem saved = studyItemRepository.save(studyItem);
         eventPublisher.publishEvent(new StudyItemCreatedEvent(this, saved.getId(), userId));
+        auditLogService.logAction(userId, "CREATE", "StudyItem", saved.getId(),
+                "Created study item: " + saved.getTitle());
         return StudyItemMapper.toDTO(saved);
     }
 
@@ -65,6 +69,8 @@ public class StudyItemService {
 
         StudyItem saved = studyItemRepository.save(item);
         eventPublisher.publishEvent(new StudyItemUpdatedEvent(this, saved.getId(), userId));
+        auditLogService.logAction(userId, "UPDATE", "StudyItem", saved.getId(),
+                "Updated study item: " + saved.getTitle());
         return StudyItemMapper.toDTO(saved);
     }
 
@@ -79,12 +85,15 @@ public class StudyItemService {
 
         studyItemRepository.delete(item);
         eventPublisher.publishEvent(new StudyItemDeletedEvent(this, id, userId));
+        auditLogService.logAction(userId, "DELETE", "StudyItem", id, "Deleted study item");
     }
 
     @CacheEvict(value = "study-items", allEntries = true)
     public void deleteAll(Long userId) {
         studyItemRepository.deleteAllByUserId(userId);
         eventPublisher.publishEvent(new StudyItemDeletedEvent(this, null, userId));
+        auditLogService.logAction(userId, "DELETE_ALL", "StudyItem", null,
+                "Deleted all study items for user");
     }
 
     @Cacheable(value = "study-items",

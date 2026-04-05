@@ -3,6 +3,7 @@ package com.studyflow.backend.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.studyflow.backend.shared.dto.LoginRequest;
 import com.studyflow.backend.shared.dto.UserRequestDTO;
+import com.studyflow.backend.domain.user.entity.Role;
 import com.studyflow.backend.domain.user.entity.User;
 import com.studyflow.backend.domain.user.repository.UserRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -17,7 +18,6 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 
-import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.notNullValue;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -104,11 +104,36 @@ class UserControllerTest {
     }
 
     @Test
-    void shouldListAllUsers() throws Exception {
+    void shouldListAllUsers_asUser_returns403() throws Exception {
         mockMvc.perform(get("/users")
                 .header("Authorization", "Bearer " + authToken))
+                .andExpect(status().isForbidden());
+    }
+
+    @Test
+    void shouldListAllUsers_asAdmin_returns200() throws Exception {
+        // Create an admin user directly via repository (bypasses the public API)
+        User adminUser = User.builder()
+                .name("Admin User")
+                .email("admin@email.com")
+                .password(passwordEncoder.encode("adminpass1"))
+                .role(Role.ADMIN)
+                .build();
+        userRepository.save(adminUser);
+
+        LoginRequest adminLogin = new LoginRequest("admin@email.com", "adminpass1");
+        MvcResult result = mockMvc.perform(post("/auth/login")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(objectMapper.writeValueAsString(adminLogin)))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$", hasSize(1)));
+                .andReturn();
+
+        String adminToken = objectMapper.readTree(result.getResponse().getContentAsString())
+                .get("token").asText();
+
+        mockMvc.perform(get("/users")
+                .header("Authorization", "Bearer " + adminToken))
+                .andExpect(status().isOk());
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.studyflow.backend.domain.study.service;
 import com.studyflow.backend.domain.study.entity.StudyItem;
 import com.studyflow.backend.domain.study.repository.StudyItemRepository;
+import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.domain.user.entity.User;
 import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.shared.constant.ErrorMessages;
@@ -31,6 +32,7 @@ class StudyItemServiceTest {
     @Mock private StudyItemRepository studyItemRepository;
     @Mock private UserRepository userRepository;
     @Mock private ApplicationEventPublisher eventPublisher;
+    @Mock private AuditLogService auditLogService;
     @InjectMocks private StudyItemService studyItemService;
 
     private User testUser;

@@ -12,6 +12,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -56,14 +57,15 @@ public class UserController {
 
     @Operation(
         summary = "Listar usuários",
-        description = "Retorna todos os usuários cadastrados. Requer autenticação.",
+        description = "Retorna todos os usuários cadastrados. Requer role ADMIN.",
         security = @SecurityRequirement(name = "bearerAuth"),
         responses = {
             @ApiResponse(responseCode = "200", description = "Lista retornada com sucesso"),
-            @ApiResponse(responseCode = "403", description = "Token ausente ou inválido")
+            @ApiResponse(responseCode = "403", description = "Token ausente, inválido ou sem permissão")
         }
     )
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDTO> listUsers() {
         return userService.findAll();
     }
