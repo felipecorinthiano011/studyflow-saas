@@ -49,11 +49,13 @@ public class AuthController {
     @PostMapping("/login")
     public Map<String, String> login(@RequestBody LoginRequest request) {
 
+        // Use the same generic message for both "user not found" and "wrong password"
+        // to prevent user-enumeration attacks (OWASP A07:2021).
         User user = userRepository.findByEmail(request.getEmail())
-                .orElseThrow(() -> new AuthenticationException("Usuário não encontrado com o email fornecido"));
+                .orElseThrow(() -> new AuthenticationException("Email ou senha incorretos"));
 
         if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
-            throw new AuthenticationException("Senha incorreta");
+            throw new AuthenticationException("Email ou senha incorretos");
         }
 
         String token = jwtService.generateToken(user.getEmail());
