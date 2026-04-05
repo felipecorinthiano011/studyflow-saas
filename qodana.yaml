@@ -5,7 +5,7 @@
 version: "1.0"
 
 # Use JVM Community linter (free). Upgrade to qodana-jvm for security & licence checks.
-linter: jetbrains/qodana-jvm-community:2026.1
+linter: jetbrains/qodana-jvm-community:2025.3   # latest stable (2026.1 not yet published)
 
 # JDK version (must match pom.xml java.version)
 projectJDK: "21"

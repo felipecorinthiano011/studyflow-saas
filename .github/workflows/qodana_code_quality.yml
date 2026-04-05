@@ -42,7 +42,7 @@ jobs:
         run: ./mvnw compile test-compile -DskipTests -Dcheckstyle.skip=true -Dspotbugs.skip=true --no-transfer-progress -q
 
       - name: 🔍 Qodana Scan
-        uses: JetBrains/qodana-action@v2026.1
+        uses: JetBrains/qodana-action@v2025.3   # latest stable: v2025.3.2 (v2026.1 not yet published)
         env:
           QODANA_TOKEN: ${{ secrets.QODANA_TOKEN }}
         with:
@@ -52,7 +52,6 @@ jobs:
           use-caches: true
           cache-default-branch-only: true
           post-pr-comment: true
-          use-annotations: true
           upload-result: true      # always save SARIF + logs as artifacts
 
       - name: 📊 Upload SARIF to GitHub Security tab
