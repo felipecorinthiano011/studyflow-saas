@@ -1,5 +1,6 @@
 package com.studyflow.backend.service;
 import com.studyflow.backend.domain.organization.repository.OrganizationRepository;
+import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.domain.user.service.UserService;
 import com.studyflow.backend.shared.constant.ErrorMessages;
 import com.studyflow.backend.shared.dto.UserRequestDTO;
@@ -26,6 +27,7 @@ class UserServiceTest {
     @Mock private UserRepository userRepository;
     @Mock private PasswordEncoder passwordEncoder;
     @Mock private OrganizationRepository organizationRepository;
+    @Mock private AuditLogService auditLogService;
     @InjectMocks private UserService userService;
 
     @BeforeEach

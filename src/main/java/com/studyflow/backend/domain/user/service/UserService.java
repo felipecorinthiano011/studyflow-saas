@@ -1,6 +1,7 @@
 package com.studyflow.backend.domain.user.service;
 
 import com.studyflow.backend.common.mapper.UserMapper;
+import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.shared.constant.ErrorMessages;
 import com.studyflow.backend.shared.dto.UserRequestDTO;
 import com.studyflow.backend.shared.dto.UserResponseDTO;
@@ -25,6 +26,7 @@ public class UserService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final OrganizationRepository organizationRepository;
+    private final AuditLogService auditLogService;
 
     public UserResponseDTO create(UserRequestDTO dto) {
         logger.info("Creating new user");
@@ -38,6 +40,8 @@ public class UserService {
 
         User saved = userRepository.save(user);
         logger.info("User created successfully with ID: {}", saved.getId());
+        auditLogService.logAction(saved.getId(), "REGISTER", "User", saved.getId(),
+                "New user registered");
         return UserMapper.toDTO(saved);
     }
 

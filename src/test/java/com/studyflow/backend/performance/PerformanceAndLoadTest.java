@@ -81,13 +81,13 @@ class PerformanceAndLoadTest extends AbstractRestAssuredTest {
                 "Sucesso na criacao de items: " + success.get() + " >= " + expected);
     }
     @Test
-    @DisplayName("Desempenho: Tempo de resposta de GET /users")
+    @DisplayName("Desempenho: Tempo de resposta de GET /users/me")
     void testGetUsersResponseTime() {
         String token = createUserAndGetToken("Response Test User", "response.test@email.com", "senha123456");
         long start = System.currentTimeMillis();
         given().header("Authorization", "Bearer " + token)
-                .get("/users")
-                .then().statusCode(200).body("size()", notNullValue());
+                .get("/users/me")
+                .then().statusCode(200).body("email", notNullValue());
         long duration = System.currentTimeMillis() - start;
         assertTrue(duration < 1000,
                 "Response time should be <1s, but was " + duration + "ms");

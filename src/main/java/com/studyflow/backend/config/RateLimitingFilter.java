@@ -22,6 +22,13 @@ import java.util.concurrent.ConcurrentHashMap;
 @Profile("!test")
 public class RateLimitingFilter implements Filter {
 
+    // Enable X-Forwarded-For resolution when the app is deployed behind a trusted
+    // reverse proxy (e.g. Railway, Heroku). Keep false in direct-access environments
+    // to prevent clients from spoofing their IP address.
+    @org.springframework.beans.factory.annotation.Value(
+            "${security.rate-limit.trust-proxy-headers:false}")
+    private boolean trustProxyHeaders;
+
     private static final int CAPACITY = 60;
     private static final int REFILL_TOKENS = 60;
     private static final Duration REFILL_DURATION = Duration.ofMinutes(1);
@@ -60,6 +67,12 @@ public class RateLimitingFilter implements Filter {
     }
 
     private String resolveClientIp(HttpServletRequest request) {
+        if (trustProxyHeaders) {
+            String xff = request.getHeader("X-Forwarded-For");
+            if (xff != null && !xff.isBlank()) {
+                return xff.split(",")[0].trim();
+            }
+        }
         return request.getRemoteAddr();
     }
 
