@@ -12,24 +12,26 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class StudyItemEventListener {
 
+    private static final String ENTITY_TYPE = "StudyItem";
+
     private final AuditLogService auditLogService;
 
     @EventListener
     public void onCreated(StudyItemCreatedEvent event) {
         auditLogService.logAction(event.getUserId(), "STUDY_ITEM_CREATED",
-                "StudyItem", event.getStudyItemId(), null);
+                ENTITY_TYPE, event.getStudyItemId(), null);
     }
 
     @EventListener
     public void onUpdated(StudyItemUpdatedEvent event) {
         auditLogService.logAction(event.getUserId(), "STUDY_ITEM_UPDATED",
-                "StudyItem", event.getStudyItemId(), null);
+                ENTITY_TYPE, event.getStudyItemId(), null);
     }
 
     @EventListener
     public void onDeleted(StudyItemDeletedEvent event) {
         auditLogService.logAction(event.getUserId(), "STUDY_ITEM_DELETED",
-                "StudyItem", event.getStudyItemId(), null);
+                ENTITY_TYPE, event.getStudyItemId(), null);
     }
 }
 

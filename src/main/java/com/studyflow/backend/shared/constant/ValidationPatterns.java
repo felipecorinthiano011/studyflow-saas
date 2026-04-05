@@ -10,6 +10,7 @@ public class ValidationPatterns {
         "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
 
     // Senha: pelo menos 8 caracteres, 1 maiúscula, 1 minúscula, 1 número, 1 especial
+    @SuppressWarnings("java:S2068") // Not a hard-coded password — this is a regex validation pattern
     public static final String PASSWORD_PATTERN =
         "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?&])[A-Za-z\\d@$!%*?&]{8,}$";
 

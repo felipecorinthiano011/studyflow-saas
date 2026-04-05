@@ -10,6 +10,8 @@ class BackendApplicationTests {
 
 	@Test
 	void contextLoads() {
+		// Verifies that the Spring application context starts without errors.
+		// No explicit assertions are needed: a misconfigured context causes the test to fail on startup.
 	}
 
 }
