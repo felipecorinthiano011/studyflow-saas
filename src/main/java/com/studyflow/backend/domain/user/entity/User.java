@@ -39,7 +39,7 @@ public class User {
     private String password;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "org_id", nullable = true)
+    @JoinColumn(name = "org_id")
     private Organization organization;
 }
 
