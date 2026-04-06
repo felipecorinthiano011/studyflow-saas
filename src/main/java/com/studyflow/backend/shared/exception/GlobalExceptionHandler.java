@@ -1,9 +1,12 @@
 package com.studyflow.backend.shared.exception;
 
 import com.studyflow.backend.shared.constant.ErrorMessages;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,6 +18,8 @@ import java.util.Map;
 
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     // ── Validation errors (@Valid) ───────────────────────────────────────────
     @ExceptionHandler(MethodArgumentNotValidException.class)
@@ -64,9 +69,18 @@ public class GlobalExceptionHandler {
                 .body(buildErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage()));
     }
 
+    // ── Unreadable request body (malformed JSON, empty body, wrong content-type) ──
+    @ExceptionHandler(HttpMessageNotReadableException.class)
+    public ResponseEntity<Map<String, Object>> handleUnreadableMessage(HttpMessageNotReadableException ex) {
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(buildErrorResponse(HttpStatus.BAD_REQUEST,
+                        "Corpo da requisição inválido ou ausente"));
+    }
+
     // ── Generic fallback ─────────────────────────────────────────────────────
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, Object>> handleGeneric(Exception ex) {
+        logger.error("Unhandled exception: {}", ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(buildErrorResponse(HttpStatus.INTERNAL_SERVER_ERROR,
                         "Erro interno no servidor"));
