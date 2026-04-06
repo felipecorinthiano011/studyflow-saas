@@ -2,6 +2,7 @@ package com.studyflow.backend.security;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,16 @@ public class JwtService {
 
     @Value("${jwt.secret}")
     private String secret;
+
+    /** Fail fast at startup if the secret is too short for HMAC-SHA256 (minimum 32 bytes / 256 bits). */
+    @PostConstruct
+    public void validateSecret() {
+        if (secret == null || secret.getBytes(StandardCharsets.UTF_8).length < 32) {
+            throw new IllegalArgumentException(
+                    "JWT_SECRET must be at least 32 bytes (256 bits) for HMAC-SHA256. "
+                    + "Generate one with: openssl rand -hex 32  (produces 64 hex characters = 32 bytes)");
+        }
+    }
 
     private SecretKey getSignKey() {
         return Keys.hmacShaKeyFor(secret.getBytes(StandardCharsets.UTF_8));
