@@ -3,6 +3,7 @@ package com.studyflow.backend.domain.study.service;
 import com.studyflow.backend.common.mapper.StudyItemMapper;
 import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.shared.constant.ErrorMessages;
+import com.studyflow.backend.shared.dto.PageResponseDTO;
 import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
 import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
 import com.studyflow.backend.domain.study.entity.StudyItem;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -98,8 +98,8 @@ public class StudyItemService {
 
     @Cacheable(value = "study-items",
             key = "#userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<StudyItemResponseDTO> findAllByUser(Long userId, Pageable pageable) {
-        return studyItemRepository.findByUserId(userId, pageable)
-                .map(StudyItemMapper::toDTO);
+    public PageResponseDTO<StudyItemResponseDTO> findAllByUser(Long userId, Pageable pageable) {
+        return PageResponseDTO.of(studyItemRepository.findByUserId(userId, pageable)
+                .map(StudyItemMapper::toDTO));
     }
 }

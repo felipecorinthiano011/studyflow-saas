@@ -5,6 +5,7 @@ import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.domain.user.entity.User;
 import com.studyflow.backend.domain.user.repository.UserRepository;
 import com.studyflow.backend.shared.constant.ErrorMessages;
+import com.studyflow.backend.shared.dto.PageResponseDTO;
 import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
 import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
 import com.studyflow.backend.shared.exception.DomainAccessDeniedException;
@@ -15,7 +16,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -159,7 +159,7 @@ class StudyItemServiceTest {
         when(studyItemRepository.findByUserId(eq(1L), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of(item1, item2)));
 
-        Page<StudyItemResponseDTO> result = studyItemService.findAllByUser(1L, pageable);
+        PageResponseDTO<StudyItemResponseDTO> result = studyItemService.findAllByUser(1L, pageable);
 
         assertEquals(2, result.getTotalElements());
         assertEquals("Item 1", result.getContent().get(0).getTitle());
@@ -173,9 +173,9 @@ class StudyItemServiceTest {
         when(studyItemRepository.findByUserId(eq(1L), any(Pageable.class)))
                 .thenReturn(new PageImpl<>(List.of()));
 
-        Page<StudyItemResponseDTO> result = studyItemService.findAllByUser(1L, pageable);
+        PageResponseDTO<StudyItemResponseDTO> result = studyItemService.findAllByUser(1L, pageable);
 
-        assertTrue(result.isEmpty());
+        assertTrue(result.getContent().isEmpty());
         verify(studyItemRepository).findByUserId(eq(1L), any(Pageable.class));
     }
 }

@@ -2,6 +2,8 @@ package com.studyflow.backend.shared.dto;
 
 import lombok.*;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 @Getter
@@ -9,7 +11,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class StudyItemResponseDTO {
+public class StudyItemResponseDTO implements Serializable {
+
+    @Serial
+    private static final long serialVersionUID = 1L;
 
     private Long id;
     private String title;
