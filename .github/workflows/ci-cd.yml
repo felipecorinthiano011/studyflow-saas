@@ -140,10 +140,7 @@ jobs:
   build-docker:
     runs-on: ubuntu-latest
     needs: build-and-test
-    if: |
-      github.ref == 'refs/heads/main' &&
-      secrets.DOCKER_USERNAME != '' &&
-      secrets.DOCKER_PASSWORD != ''
+    if: github.ref == 'refs/heads/main'
 
     steps:
     - name: 📥 Checkout code

@@ -113,7 +113,7 @@ jobs:
         echo "=================================="
 
     - name: 📢 Send Slack notification success
-      if: success() && ${{ secrets.SLACK_WEBHOOK != '' }}
+      if: success() && secrets.SLACK_WEBHOOK != ''
       uses: 8398a7/action-slack@v3
       with:
         status: success
@@ -123,7 +123,7 @@ jobs:
       continue-on-error: true
 
     - name: 🚨 Send Slack notification failure
-      if: failure() && ${{ secrets.SLACK_WEBHOOK != '' }}
+      if: failure() && secrets.SLACK_WEBHOOK != ''
       uses: 8398a7/action-slack@v3
       with:
         status: failure
