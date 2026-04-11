@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
@@ -69,8 +68,7 @@ public class StudyItemController {
             Authentication authentication) {
         User user = authHelper.getAuthenticatedUser(authentication);
         Pageable pageable = PageRequest.of(page, size, Sort.by("createdAt").descending());
-        Page<StudyItemResponseDTO> result = studyItemService.findAllByUser(user.getId(), pageable);
-        return PageResponseDTO.of(result);
+        return studyItemService.findAllByUser(user.getId(), pageable);
     }
 
     @Operation(summary = "Atualizar item de estudo",

@@ -3,6 +3,7 @@ package com.studyflow.backend.domain.study.service;
 import com.studyflow.backend.common.mapper.StudyItemMapper;
 import com.studyflow.backend.domain.audit.service.AuditLogService;
 import com.studyflow.backend.shared.constant.ErrorMessages;
+import com.studyflow.backend.shared.dto.PageResponseDTO;
 import com.studyflow.backend.shared.dto.StudyItemRequestDTO;
 import com.studyflow.backend.shared.dto.StudyItemResponseDTO;
 import com.studyflow.backend.domain.study.entity.StudyItem;
@@ -18,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
@@ -28,12 +28,14 @@ import java.time.LocalDateTime;
 @RequiredArgsConstructor
 public class StudyItemService {
 
+    private static final String CACHE_NAME = "study-items";
+
     private final StudyItemRepository studyItemRepository;
     private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
     private final AuditLogService auditLogService;
 
-    @CacheEvict(value = "study-items", allEntries = true)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public StudyItemResponseDTO create(StudyItemRequestDTO dto, Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
@@ -55,7 +57,7 @@ public class StudyItemService {
         return StudyItemMapper.toDTO(saved);
     }
 
-    @CacheEvict(value = "study-items", allEntries = true)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public StudyItemResponseDTO update(Long id, StudyItemRequestDTO dto, Long userId) {
         StudyItem item = studyItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.STUDY_ITEM_NOT_FOUND));
@@ -74,7 +76,7 @@ public class StudyItemService {
         return StudyItemMapper.toDTO(saved);
     }
 
-    @CacheEvict(value = "study-items", allEntries = true)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void delete(Long id, Long userId) {
         StudyItem item = studyItemRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.STUDY_ITEM_NOT_FOUND));
@@ -88,7 +90,7 @@ public class StudyItemService {
         auditLogService.logAction(userId, "DELETE", "StudyItem", id, "Deleted study item");
     }
 
-    @CacheEvict(value = "study-items", allEntries = true)
+    @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void deleteAll(Long userId) {
         studyItemRepository.deleteAllByUserId(userId);
         eventPublisher.publishEvent(new StudyItemDeletedEvent(this, null, userId));
@@ -96,10 +98,10 @@ public class StudyItemService {
                 "Deleted all study items for user");
     }
 
-    @Cacheable(value = "study-items",
+    @Cacheable(value = CACHE_NAME,
             key = "#userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
-    public Page<StudyItemResponseDTO> findAllByUser(Long userId, Pageable pageable) {
-        return studyItemRepository.findByUserId(userId, pageable)
-                .map(StudyItemMapper::toDTO);
+    public PageResponseDTO<StudyItemResponseDTO> findAllByUser(Long userId, Pageable pageable) {
+        return PageResponseDTO.of(studyItemRepository.findByUserId(userId, pageable)
+                .map(StudyItemMapper::toDTO));
     }
 }
