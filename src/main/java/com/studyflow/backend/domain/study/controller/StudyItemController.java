@@ -49,6 +49,7 @@ public class StudyItemController {
             @ApiResponse(responseCode = "400", description = "Título inválido"),
             @ApiResponse(responseCode = "403", description = "Não autenticado")
         })
+    /** Creates a study item for the authenticated user. */
     @PostMapping
     public StudyItemResponseDTO create(@Valid @RequestBody StudyItemRequestDTO dto,
             Authentication authentication) {
@@ -61,6 +62,7 @@ public class StudyItemController {
             @ApiResponse(responseCode = "200", description = "Página retornada"),
             @ApiResponse(responseCode = "403", description = "Não autenticado")
         })
+    /** Returns a paginated list of study items for the authenticated user. */
     @GetMapping
     public PageResponseDTO<StudyItemResponseDTO> getAll(
             @RequestParam(defaultValue = "0") int page,
@@ -81,6 +83,7 @@ public class StudyItemController {
             @ApiResponse(responseCode = "400", description = "Item não encontrado ou acesso negado"),
             @ApiResponse(responseCode = "403", description = "Não autenticado")
         })
+    /** Updates the study item with the given id (must belong to the authenticated user). */
     @PutMapping("/{id}")
     public StudyItemResponseDTO update(@PathVariable Long id,
             @Valid @RequestBody StudyItemRequestDTO dto,
@@ -95,6 +98,7 @@ public class StudyItemController {
             @ApiResponse(responseCode = "400", description = "Item não encontrado ou acesso negado"),
             @ApiResponse(responseCode = "403", description = "Não autenticado")
         })
+    /** Deletes the study item with the given id (must belong to the authenticated user). */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> delete(@PathVariable Long id, Authentication authentication) {
         User user = authHelper.getAuthenticatedUser(authentication);
@@ -107,6 +111,7 @@ public class StudyItemController {
             @ApiResponse(responseCode = "204", description = "Todos os itens excluídos"),
             @ApiResponse(responseCode = "403", description = "Não autenticado")
         })
+    /** Deletes all study items belonging to the authenticated user. */
     @DeleteMapping
     public ResponseEntity<Void> deleteAll(Authentication authentication) {
         User user = authHelper.getAuthenticatedUser(authentication);

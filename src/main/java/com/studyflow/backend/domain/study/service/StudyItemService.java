@@ -35,6 +35,7 @@ public class StudyItemService {
     private final ApplicationEventPublisher eventPublisher;
     private final AuditLogService auditLogService;
 
+    /** Creates a new study item owned by the given user. */
     @CacheEvict(value = CACHE_NAME, allEntries = true)
     public StudyItemResponseDTO create(StudyItemRequestDTO dto, Long userId) {
         User user = userRepository.findById(userId)
@@ -54,9 +55,10 @@ public class StudyItemService {
         eventPublisher.publishEvent(new StudyItemCreatedEvent(this, saved.getId(), userId));
         auditLogService.logAction(userId, "CREATE", "StudyItem", saved.getId(),
                 "Created study item: " + saved.getTitle());
-        return StudyItemMapper.toDTO(saved);
+        return StudyItemMapper.toDto(saved);
     }
 
+    /** Updates title and description of the given study item (ownership enforced). */
     @CacheEvict(value = CACHE_NAME, allEntries = true)
     public StudyItemResponseDTO update(Long id, StudyItemRequestDTO dto, Long userId) {
         StudyItem item = studyItemRepository.findById(id)
@@ -73,9 +75,10 @@ public class StudyItemService {
         eventPublisher.publishEvent(new StudyItemUpdatedEvent(this, saved.getId(), userId));
         auditLogService.logAction(userId, "UPDATE", "StudyItem", saved.getId(),
                 "Updated study item: " + saved.getTitle());
-        return StudyItemMapper.toDTO(saved);
+        return StudyItemMapper.toDto(saved);
     }
 
+    /** Deletes a single study item by id (ownership enforced). */
     @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void delete(Long id, Long userId) {
         StudyItem item = studyItemRepository.findById(id)
@@ -90,6 +93,7 @@ public class StudyItemService {
         auditLogService.logAction(userId, "DELETE", "StudyItem", id, "Deleted study item");
     }
 
+    /** Deletes all study items owned by the given user. */
     @CacheEvict(value = CACHE_NAME, allEntries = true)
     public void deleteAll(Long userId) {
         studyItemRepository.deleteAllByUserId(userId);
@@ -98,10 +102,11 @@ public class StudyItemService {
                 "Deleted all study items for user");
     }
 
+    /** Returns a paginated slice of study items for the given user (results are cached). */
     @Cacheable(value = CACHE_NAME,
             key = "#userId + ':' + #pageable.pageNumber + ':' + #pageable.pageSize")
     public PageResponseDTO<StudyItemResponseDTO> findAllByUser(Long userId, Pageable pageable) {
         return PageResponseDTO.of(studyItemRepository.findByUserId(userId, pageable)
-                .map(StudyItemMapper::toDTO));
+                .map(StudyItemMapper::toDto));
     }
 }

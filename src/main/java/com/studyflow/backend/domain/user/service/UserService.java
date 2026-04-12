@@ -28,6 +28,7 @@ public class UserService {
     private final OrganizationRepository organizationRepository;
     private final AuditLogService auditLogService;
 
+    /** Creates and persists a new user account. */
     public UserResponseDTO create(UserRequestDTO dto) {
         logger.info("Creating new user");
 
@@ -42,20 +43,22 @@ public class UserService {
         logger.info("User created successfully with ID: {}", saved.getId());
         auditLogService.logAction(saved.getId(), "REGISTER", "User", saved.getId(),
                 "New user registered");
-        return UserMapper.toDTO(saved);
+        return UserMapper.toDto(saved);
     }
 
+    /** Returns all users. */
     public List<UserResponseDTO> findAll() {
         logger.info("Fetching all users");
         List<User> users = userRepository.findAll();
         logger.info("Found {} users", users.size());
-        return users.stream().map(UserMapper::toDTO).toList();
+        return users.stream().map(UserMapper::toDto).toList();
     }
 
+    /** Finds a user by email or throws {@link com.studyflow.backend.shared.exception.ResourceNotFoundException}. */
     public UserResponseDTO findByEmail(String email) {
         logger.info("Finding user by email");
         User user = userRepository.findByEmail(email)
                 .orElseThrow(() -> new ResourceNotFoundException(ErrorMessages.USER_NOT_FOUND));
-        return UserMapper.toDTO(user);
+        return UserMapper.toDto(user);
     }
 }

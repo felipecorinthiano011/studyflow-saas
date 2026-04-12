@@ -14,7 +14,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -50,6 +54,7 @@ public class UserController {
                     """)))
         }
     )
+    /** Registers a new user account. No authentication required. */
     @PostMapping
     public UserResponseDTO createUser(@RequestBody @Valid UserRequestDTO dto) {
         return userService.create(dto);
@@ -64,6 +69,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Token ausente, inválido ou sem permissão")
         }
     )
+    /** Returns all registered users. Requires ADMIN role. */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDTO> listUsers() {
@@ -79,6 +85,7 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Token ausente ou inválido")
         }
     )
+    /** Returns the profile of the currently authenticated user. */
     @GetMapping("/me")
     public UserResponseDTO getProfile(Authentication authentication) {
         return userService.findByEmail(authHelper.getAuthenticatedUser(authentication).getEmail());

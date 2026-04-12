@@ -19,7 +19,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
@@ -55,6 +58,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
         }
     )
+    /** Authenticates the user and returns a JWT access token plus a refresh token. */
     @PostMapping("/login")
     public TokenResponse login(@Valid @RequestBody LoginRequest request) {
 
@@ -91,6 +95,7 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Refresh token inválido ou expirado")
         }
     )
+    /** Rotates the refresh token and issues a new access token. */
     @PostMapping("/refresh")
     public TokenResponse refresh(@Valid @RequestBody RefreshTokenRequest request) {
         RefreshToken newRefreshToken = refreshTokenService.verifyAndRotate(request.getRefreshToken());
@@ -120,6 +125,7 @@ public class AuthController {
             @ApiResponse(responseCode = "204", description = "Logout realizado com sucesso")
         }
     )
+    /** Revokes the given refresh token, effectively logging the user out. */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
         refreshTokenService.revokeByToken(request.getRefreshToken());
