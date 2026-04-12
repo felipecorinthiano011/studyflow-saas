@@ -19,7 +19,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/auth")
@@ -32,6 +35,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
+    /** Authenticates the user and returns a JWT access token plus a refresh token. */
     @Operation(
         summary = "Login",
         description = "Autentica o usuário e retorna um access token JWT (1h) e um refresh token (7d).",
@@ -76,6 +80,7 @@ public class AuthController {
                 .build();
     }
 
+    /** Rotates the refresh token and issues a new access token. */
     @Operation(
         summary = "Renovar access token",
         description = "Valida o refresh token, o rotaciona e emite um novo access token.",
@@ -106,6 +111,7 @@ public class AuthController {
                 .build();
     }
 
+    /** Revokes the given refresh token, effectively logging the user out. */
     @Operation(
         summary = "Logout",
         description = "Invalida o refresh token do usuário.",

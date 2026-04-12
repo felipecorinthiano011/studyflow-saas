@@ -13,7 +13,8 @@ public final class UserMapper {
         throw new AssertionError("Utility class");
     }
 
-    public static UserResponseDTO toDTO(User user) {
+    /** Maps a {@link User} entity to its DTO representation. */
+    public static UserResponseDTO toDto(User user) {
         return UserResponseDTO.builder()
                 .id(user.getId())
                 .name(user.getName())

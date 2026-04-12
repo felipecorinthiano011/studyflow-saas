@@ -14,7 +14,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 
@@ -27,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationHelper authHelper;
 
+    /** Registers a new user account. No authentication required. */
     @Operation(
         summary = "Criar usuário",
         description = "Cadastra um novo usuário. Não requer autenticação.",
@@ -55,6 +60,7 @@ public class UserController {
         return userService.create(dto);
     }
 
+    /** Returns all registered users. Requires ADMIN role. */
     @Operation(
         summary = "Listar usuários",
         description = "Retorna todos os usuários cadastrados. Requer role ADMIN.",
@@ -70,6 +76,7 @@ public class UserController {
         return userService.findAll();
     }
 
+    /** Returns the profile of the currently authenticated user. */
     @Operation(
         summary = "Obter perfil do usuário",
         description = "Retorna os dados do usuário autenticado.",

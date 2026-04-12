@@ -39,6 +39,7 @@ public class StudyItemController {
     private final StudyItemService studyItemService;
     private final AuthenticationHelper authHelper;
 
+    /** Creates a study item for the authenticated user. */
     @Operation(summary = "Criar item de estudo",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(examples = @ExampleObject(value = """
@@ -56,6 +57,7 @@ public class StudyItemController {
         return studyItemService.create(dto, user.getId());
     }
 
+    /** Returns a paginated list of study items for the authenticated user. */
     @Operation(summary = "Listar itens de estudo (paginado)",
         responses = {
             @ApiResponse(responseCode = "200", description = "Página retornada"),
@@ -71,6 +73,7 @@ public class StudyItemController {
         return studyItemService.findAllByUser(user.getId(), pageable);
     }
 
+    /** Updates the study item with the given id (must belong to the authenticated user). */
     @Operation(summary = "Atualizar item de estudo",
         requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
             content = @Content(examples = @ExampleObject(value = """
@@ -89,6 +92,7 @@ public class StudyItemController {
         return studyItemService.update(id, dto, user.getId());
     }
 
+    /** Deletes the study item with the given id (must belong to the authenticated user). */
     @Operation(summary = "Excluir item de estudo",
         responses = {
             @ApiResponse(responseCode = "204", description = "Item excluído"),
@@ -102,6 +106,7 @@ public class StudyItemController {
         return ResponseEntity.noContent().build();
     }
 
+    /** Deletes all study items belonging to the authenticated user. */
     @Operation(summary = "Excluir todos os itens do usuário",
         responses = {
             @ApiResponse(responseCode = "204", description = "Todos os itens excluídos"),

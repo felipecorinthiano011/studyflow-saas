@@ -13,7 +13,8 @@ public final class StudyItemMapper {
         throw new AssertionError("Utility class");
     }
 
-    public static StudyItemResponseDTO toDTO(StudyItem item) {
+    /** Maps a {@link StudyItem} entity to its DTO representation. */
+    public static StudyItemResponseDTO toDto(StudyItem item) {
         return StudyItemResponseDTO.builder()
                 .id(item.getId())
                 .title(item.getTitle())
