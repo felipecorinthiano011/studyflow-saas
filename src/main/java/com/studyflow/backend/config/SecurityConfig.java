@@ -1,7 +1,6 @@
 package com.studyflow.backend.config;
 
 import com.studyflow.backend.security.JwtAuthenticationFilter;
-import com.studyflow.backend.service.UserDetailsServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -29,7 +28,6 @@ import java.util.List;
 public class SecurityConfig {
 
     private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserDetailsServiceImpl userDetailsService;
 
     @Value("${CORS_ALLOWED_ORIGINS:http://localhost:4200}")
     private String allowedOrigins;

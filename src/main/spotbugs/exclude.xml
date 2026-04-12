@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  SpotBugs exclusion filter.
+
+  EI_EXPOSE_REP / EI_EXPOSE_REP2 false-positive suppressions:
+  – Spring-managed beans (services, controllers, configs) are singletons; the
+    injected collaborators are also Spring-managed singletons, so "storing an
+    externally mutable object" is not an exploitable vulnerability here.
+  – JPA entities use getter/setter patterns mandated by the JPA specification;
+    defensive copying would break lazy-loading and dirty-tracking.
+  – Spring Data's Page.getContent() already returns an unmodifiable list, so
+    the EI_EXPOSE_REP warning on PageResponseDTO is a false positive.
+-->
+<FindBugsFilter>
+
+    <!-- Spring beans: injected collaborators are singletons, not caller-owned state -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP2"/>
+        <Or>
+            <Class name="com.studyflow.backend.config.SecurityConfig"/>
+            <Class name="com.studyflow.backend.domain.auth.service.RefreshTokenService"/>
+            <Class name="com.studyflow.backend.domain.organization.runner.DataMigrationRunner"/>
+            <Class name="com.studyflow.backend.domain.study.controller.StudyItemController"/>
+            <Class name="com.studyflow.backend.domain.study.service.StudyItemService"/>
+        </Or>
+    </Match>
+
+    <!-- JPA entities: getter/setter/builder patterns are required by the JPA spec -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+        <Or>
+            <Class name="com.studyflow.backend.domain.study.entity.StudyItem"/>
+            <Class name="com.studyflow.backend.domain.study.entity.StudyItem$StudyItemBuilder"/>
+            <Class name="com.studyflow.backend.domain.user.entity.User"/>
+            <Class name="com.studyflow.backend.domain.user.entity.User$UserBuilder"/>
+        </Or>
+    </Match>
+
+    <!-- PageResponseDTO: content comes from Spring Data Page.getContent() which is unmodifiable -->
+    <Match>
+        <Bug pattern="EI_EXPOSE_REP,EI_EXPOSE_REP2"/>
+        <Or>
+            <Class name="com.studyflow.backend.shared.dto.PageResponseDTO"/>
+            <Class name="com.studyflow.backend.shared.dto.PageResponseDTO$PageResponseDTOBuilder"/>
+        </Or>
+    </Match>
+
+</FindBugsFilter>

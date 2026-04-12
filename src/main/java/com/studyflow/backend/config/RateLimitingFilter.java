@@ -38,7 +38,10 @@ public class RateLimitingFilter implements Filter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response,
             FilterChain chain) throws IOException, ServletException {
-        HttpServletRequest httpRequest = (HttpServletRequest) request;
+        if (!(request instanceof HttpServletRequest httpRequest)) {
+            chain.doFilter(request, response);
+            return;
+        }
         String path = httpRequest.getServletPath();
 
         if (shouldSkip(path)) {
@@ -51,8 +54,7 @@ public class RateLimitingFilter implements Filter {
 
         if (bucket.tryConsume(1)) {
             chain.doFilter(request, response);
-        } else {
-            HttpServletResponse httpResponse = (HttpServletResponse) response;
+        } else if (response instanceof HttpServletResponse httpResponse) {
             httpResponse.setStatus(429);
             httpResponse.setContentType("application/json");
             httpResponse.getWriter().write(
