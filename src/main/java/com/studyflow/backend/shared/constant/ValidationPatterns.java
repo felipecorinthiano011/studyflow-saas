@@ -3,7 +3,7 @@ package com.studyflow.backend.shared.constant;
 /**
  * Padrões de validação do sistema.
  */
-public class ValidationPatterns {
+public final class ValidationPatterns {
 
     // Email pattern (RFC 5322 simplificado)
     public static final String EMAIL_PATTERN =

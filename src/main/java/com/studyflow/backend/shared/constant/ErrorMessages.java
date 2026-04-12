@@ -3,7 +3,7 @@ package com.studyflow.backend.shared.constant;
 /**
  * Mensagens de erro padrão do sistema.
  */
-public class ErrorMessages {
+public final class ErrorMessages {
     public static final String USER_NOT_FOUND = "Usuário não encontrado";
     public static final String USER_ALREADY_EXISTS = "Usuário já existe";
     public static final String INVALID_EMAIL = "Email inválido";
