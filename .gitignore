@@ -32,8 +32,9 @@ build/
 ### VS Code ###
 .vscode/
 
-### Nested backend/ subfolder - stale duplicate, never track from root repo ###
-backend/
+### Nested backend/ subfolder – stale duplicate, never track its src or target ###
+backend/src/
+backend/target/
 
 ### Logs & temp files ###
 *.log
