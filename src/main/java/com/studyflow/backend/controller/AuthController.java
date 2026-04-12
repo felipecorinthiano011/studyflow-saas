@@ -35,6 +35,7 @@ public class AuthController {
     private final JwtService jwtService;
     private final RefreshTokenService refreshTokenService;
 
+    /** Authenticates the user and returns a JWT access token plus a refresh token. */
     @Operation(
         summary = "Login",
         description = "Autentica o usuário e retorna um access token JWT (1h) e um refresh token (7d).",
@@ -58,7 +59,6 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Credenciais inválidas")
         }
     )
-    /** Authenticates the user and returns a JWT access token plus a refresh token. */
     @PostMapping("/login")
     public TokenResponse login(@Valid @RequestBody LoginRequest request) {
 
@@ -80,6 +80,7 @@ public class AuthController {
                 .build();
     }
 
+    /** Rotates the refresh token and issues a new access token. */
     @Operation(
         summary = "Renovar access token",
         description = "Valida o refresh token, o rotaciona e emite um novo access token.",
@@ -95,7 +96,6 @@ public class AuthController {
             @ApiResponse(responseCode = "401", description = "Refresh token inválido ou expirado")
         }
     )
-    /** Rotates the refresh token and issues a new access token. */
     @PostMapping("/refresh")
     public TokenResponse refresh(@Valid @RequestBody RefreshTokenRequest request) {
         RefreshToken newRefreshToken = refreshTokenService.verifyAndRotate(request.getRefreshToken());
@@ -111,6 +111,7 @@ public class AuthController {
                 .build();
     }
 
+    /** Revokes the given refresh token, effectively logging the user out. */
     @Operation(
         summary = "Logout",
         description = "Invalida o refresh token do usuário.",
@@ -125,7 +126,6 @@ public class AuthController {
             @ApiResponse(responseCode = "204", description = "Logout realizado com sucesso")
         }
     )
-    /** Revokes the given refresh token, effectively logging the user out. */
     @PostMapping("/logout")
     public ResponseEntity<Void> logout(@Valid @RequestBody RefreshTokenRequest request) {
         refreshTokenService.revokeByToken(request.getRefreshToken());

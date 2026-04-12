@@ -31,6 +31,7 @@ public class UserController {
     private final UserService userService;
     private final AuthenticationHelper authHelper;
 
+    /** Registers a new user account. No authentication required. */
     @Operation(
         summary = "Criar usuário",
         description = "Cadastra um novo usuário. Não requer autenticação.",
@@ -54,12 +55,12 @@ public class UserController {
                     """)))
         }
     )
-    /** Registers a new user account. No authentication required. */
     @PostMapping
     public UserResponseDTO createUser(@RequestBody @Valid UserRequestDTO dto) {
         return userService.create(dto);
     }
 
+    /** Returns all registered users. Requires ADMIN role. */
     @Operation(
         summary = "Listar usuários",
         description = "Retorna todos os usuários cadastrados. Requer role ADMIN.",
@@ -69,13 +70,13 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Token ausente, inválido ou sem permissão")
         }
     )
-    /** Returns all registered users. Requires ADMIN role. */
     @GetMapping
     @PreAuthorize("hasRole('ADMIN')")
     public List<UserResponseDTO> listUsers() {
         return userService.findAll();
     }
 
+    /** Returns the profile of the currently authenticated user. */
     @Operation(
         summary = "Obter perfil do usuário",
         description = "Retorna os dados do usuário autenticado.",
@@ -85,7 +86,6 @@ public class UserController {
             @ApiResponse(responseCode = "403", description = "Token ausente ou inválido")
         }
     )
-    /** Returns the profile of the currently authenticated user. */
     @GetMapping("/me")
     public UserResponseDTO getProfile(Authentication authentication) {
         return userService.findByEmail(authHelper.getAuthenticatedUser(authentication).getEmail());
