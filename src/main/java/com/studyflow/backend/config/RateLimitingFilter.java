@@ -59,6 +59,8 @@ public class RateLimitingFilter implements Filter {
             httpResponse.setContentType("application/json");
             httpResponse.getWriter().write(
                     "{\"status\":429,\"message\":\"Too many requests. Try again in a minute.\"}");
+        } else {
+            throw new ServletException("Rate limit exceeded but response is not HttpServletResponse");
         }
     }
 
